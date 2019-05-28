@@ -37,9 +37,9 @@ FETCH_DB_URL = os.getenv("DATABASE_URL", "postgres://postgres@localhost/yardstic
 STORE_DB_URL = os.getenv("STORE_DB_URL", FETCH_DB_URL)
 
 # database to measure
-store_db = records.Database(STORE_DB_URL)
-# database to store metrics in
 fetch_db = records.Database(FETCH_DB_URL)
+# database to store metrics in
+store_db = records.Database(STORE_DB_URL)
 
 
 def get_sql(name):
@@ -75,7 +75,10 @@ def store_metric(name, as_json=False):
     if as_json:
         print(json.dumps(metric, default=str))
         return
-
+    sql = (
+        "insert into perf_metric (stamp, payload, name)"
+        "values (:stamp, :payload, :name)"
+    )
     # most metric queries return a single row, but loop here so we can store
     # more than one result
     # NOTE: Also means we don't insert anything if results are empty (that's
@@ -84,10 +87,6 @@ def store_metric(name, as_json=False):
         stamp = metric["stamp"]
         name = metric["name"]
         payload = json.dumps(i, default=str)
-        sql = (
-            "insert into dba_metrics (stamp, payload, name) "
-            "values (:stamp, :payload, :name)"
-        )
         store_db.query(sql, stamp=stamp, payload=payload, name=name)
 
 
@@ -102,7 +101,8 @@ def create_table():
     """Create table for storing metrics in target database if not present
     """
     sql = (
-        "create table if not exists dba_metrics( "
+        "create table if not exists perf_metric( "
+        "metric_id bigserial primary key "
         "stamp timestamp with time zone, "
         "payload jsonb, "
         "name text)"

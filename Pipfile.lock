@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "78e893050664967192162c698459872884774449ff3a330abaf3be10a75f03aa"
+            "sha256": "b76db065a6cb25f6fb31d563b20ff0968ab2159f78be94b9c7a6dcb26b4ad0d2"
         },
         "pipfile-spec": 6,
         "requires": {},
@@ -56,14 +56,6 @@
             "index": "pypi",
             "version": "==3.6.0"
         },
-        "arrow": {
-            "hashes": [
-                "sha256:002f2315cf4c8404de737c42860441732d339bbc57fee584e2027520e055ecc1",
-                "sha256:82dd5e13b733787d4eb0fef42d1ee1a99136dc1d65178f70373b3678b3181bfc"
-            ],
-            "index": "pypi",
-            "version": "==0.13.2"
-        },
         "async-timeout": {
             "hashes": [
                 "sha256:0c3c816a028d47f659d6ff5c745cb2acf1f966da1fe5c19c77a70282b25f4c5f",
@@ -77,13 +69,6 @@
                 "sha256:f0b870f674851ecbfbbbd364d6b5cbdff9dcedbc7f3f5e18a6891057f21fe399"
             ],
             "version": "==19.1.0"
-        },
-        "backports-functools-lru-cache": {
-            "hashes": [
-                "sha256:f0b0e4eba956de51238e17573b7087e852dfe9854afd2e9c873f73fc0ca0a6dd"
-            ],
-            "index": "pypi",
-            "version": "==1.5"
         },
         "backports.csv": {
             "hashes": [
@@ -199,13 +184,6 @@
             ],
             "version": "==4.5.2"
         },
-        "newrelic": {
-            "hashes": [
-                "sha256:df880bc3b5da8d4ecb6c3e743d21b0a08cfbd911e5eef8873511480ceb20a2a5"
-            ],
-            "index": "pypi",
-            "version": "==4.20.0.120"
-        },
         "odfpy": {
             "hashes": [
                 "sha256:596021f0519623ca8717331951c95e3b8d7b21e86edc7efe8cb650a0d0f59a2b"
@@ -217,6 +195,13 @@
                 "sha256:626d38647c063d55803ef4971c4d43226538d4e95cb6260c094e363ee33e10c7"
             ],
             "version": "==2.4.11"
+        },
+        "pathlib": {
+            "hashes": [
+                "sha256:6940718dfc3eff4258203ad5021090933e5c04707d5ca8cc9e73c94a7894ea9f"
+            ],
+            "index": "pypi",
+            "version": "==1.0.1"
         },
         "psycopg2-binary": {
             "hashes": [
@@ -276,13 +261,6 @@
             ],
             "version": "==2.19"
         },
-        "python-dateutil": {
-            "hashes": [
-                "sha256:7e6584c74aeed623791615e26efd690f29817a27c73085b78e4bad02493df2fb",
-                "sha256:c89805f6f4d64db21ed966fda138f8a5ed7a4fdbc1a8ee329ce1b74e3c74da9e"
-            ],
-            "version": "==2.8.0"
-        },
         "python-dotenv": {
             "hashes": [
                 "sha256:156f218846bd90e0d537915545cde4a987947c2cecc628b50f9955fdde72534a",
@@ -340,10 +318,10 @@
         },
         "sqlalchemy": {
             "hashes": [
-                "sha256:91c54ca8345008fceaec987e10924bf07dcab36c442925357e5a467b36a38319"
+                "sha256:c7fef198b43ef31dfd783d094fd5ee435ce8717592e6784c45ba337254998017"
             ],
             "markers": "python_version >= '3.0'",
-            "version": "==1.3.3"
+            "version": "==1.3.4"
         },
         "tablib": {
             "hashes": [

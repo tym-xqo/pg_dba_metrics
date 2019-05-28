@@ -1,25 +1,20 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*
 import os
-from argparse import ArgumentParser
-from pprint import pprint
 
 import slack
+from dotenv import find_dotenv, load_dotenv
 
-client = slack.WebClient(token=os.getenv("SLACK_TOKEN"))
+load_dotenv(find_dotenv())
+
+TOKEN = os.getenv("SLACK_TOKEN")
+CHANNEL = os.getenv("CHANNEL")
+
+client = slack.WebClient(TOKEN)
 
 
-def slack_post(message="Hello, world!"):
-    response = client.chat_postMessage(
-        channel="UDQ1P3A1E",
-        blocks=[{"type": "section", "text": {"type": "mrkdwn", "text": message}}],
-    )
-    return response
+def slack_post(message="Hello world!"):
+    r = client.chat_postMessage(channel=CHANNEL, text=message)
+    return r
 
 
 if __name__ == "__main__":
-    parse = ArgumentParser()
-    parse.add_argument("message", nargs="?", default="Hello, world!")
-    args = parse.parse_args()
-    r = slack_post(args.message)
-    pprint(r.data)
+    slack_post("Something blah blah")
