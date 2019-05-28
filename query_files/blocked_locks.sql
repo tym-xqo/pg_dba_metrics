@@ -1,6 +1,6 @@
-select pid
-     , locktype
-     , mode
-     , granted 
-  from pg_locks 
- where not granted;
+SELECT pid ,
+       locktype ,
+       mode ,
+       granted
+  FROM pg_locks
+ WHERE NOT granted;

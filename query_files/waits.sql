@@ -1,10 +1,14 @@
-select max(age(now(), query_start)) as longest
-     , count(*) as wait_count
-     , wait_event_type 
-  from pg_stat_activity 
- where backend_type = 'client backend'
-   and wait_event_type is not null 
-  --  and query_start is not null 
-  --  and state != 'idle' 
-   
- group by 3 order by 1 desc;
+SELECT max(age(clock_timestamp(), query_start)) AS longest ,
+       count(*) AS wait_count ,
+       wait_event_type ,
+       pid
+  FROM pg_stat_activity
+ WHERE backend_type = 'client backend'
+   AND wait_event_type IS NOT NULL
+   AND query_start IS NOT NULL --  and state != 'idle'
+
+ GROUP BY 3,
+          4
+ ORDER BY 1 DESC
+ LIMIT 1
+ ;

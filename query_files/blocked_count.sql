@@ -1,3 +1,3 @@
-select count(1) as blocked_locks
-  from pg_locks
- where not granted
+SELECT count(1) AS blocked_locks
+  FROM pg_locks
+ WHERE NOT GRANTED
