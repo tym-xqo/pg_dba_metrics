@@ -2,8 +2,11 @@
 # -*- coding: utf-8 -
 from slack_post import slack_post
 
+config = [dict(name="test", data_point="foo", threshold="10")]
+
 
 def send_alert(name, data_point, value, threshold):
+    # TODO: include raw metric JSON as attachment
     message_template = (
         f"Metric *{name}* {data_point} is {value}\nThreshold is {threshold}"
     )
@@ -11,9 +14,7 @@ def send_alert(name, data_point, value, threshold):
     return post_
 
 
-def parse_metric(metric={}, data_point="test_data_point", threshold=0):
-    if not metric:
-        metric = {"data": [{"test_data_point": 1}], "name": "test_metric"}
+def compare_threshold(metric, data_point, threshold):
     data = metric["data"]
     name = metric["name"]
     for row in data:
@@ -27,4 +28,5 @@ def parse_metric(metric={}, data_point="test_data_point", threshold=0):
 
 
 if __name__ == "__main__":
-    parse_metric()
+    metric = {"data": [{"test_data_point": 1}], "name": "test_metric"}
+    compare_threshold(metric, "test_data_point", 0)
