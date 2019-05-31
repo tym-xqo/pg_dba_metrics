@@ -1,1 +1,1 @@
-SELECT 100 as foo;
+SELECT 33 as foo;

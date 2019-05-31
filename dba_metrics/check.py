@@ -16,14 +16,12 @@ Usage:
     - Invoke from other python script with `query_checks.schedule()` or
     `query_checks.get_metrics(as_json=True)`
 """
-import argparse
-import glob
 import json
 import os
 from datetime import datetime
 
 import records
-from apscheduler.schedulers.blocking import BlockingScheduler
+from alert import alert_check
 from dotenv import find_dotenv, load_dotenv
 from sqlalchemy.exc import ProgrammingError
 
@@ -68,10 +66,14 @@ def fetch_metric(name):
     return j
 
 
-def store_metric(name, as_json=False):
+def store_metric(name, as_json=False, quiet=False):
     """Insert metric query result in time series table in target database
     """
     metric = fetch_metric(name)
+
+    if not quiet:
+        alert_check(metric)
+
     if as_json:
         print(json.dumps(metric, default=str))
         return
@@ -88,46 +90,3 @@ def store_metric(name, as_json=False):
         name = metric["name"]
         payload = json.dumps(i, default=str)
         store_db.query(sql, stamp=stamp, payload=payload, name=name)
-
-
-def get_metrics(as_json=False):
-    queries = [name for name in glob.glob("query_files/*")]
-    metrics = [os.path.basename(name) for name in queries]
-    for name in metrics:
-        store_metric(name, as_json)
-
-
-def create_table():
-    """Create table for storing metrics in target database if not present
-    """
-    sql = (
-        "create table if not exists perf_metric( "
-        "metric_id bigserial primary key "
-        "stamp timestamp with time zone, "
-        "payload jsonb, "
-        "name text)"
-    )
-    store_db.query(sql)
-
-
-def schedule():
-    scheduler = BlockingScheduler(timezone="UTC")
-    scheduler.add_job(get_metrics, "interval", seconds=10)
-    print("Press Ctrl+C to exit")
-
-    # Execution will block here until Ctrl+C is pressed.
-    try:
-        scheduler.start()
-    except (KeyboardInterrupt, SystemExit):
-        pass
-
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-j", "--json", action="store_true", default=False)
-    args = parser.parse_args()
-    if args.json:
-        metrics = get_metrics(as_json=True)
-    else:
-        create_table()
-        schedule()

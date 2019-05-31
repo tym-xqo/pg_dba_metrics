@@ -1,0 +1,12 @@
+- check: test_data_point
+  name: test_metric
+  status: clear
+  threshold: 0
+- check: foo
+  name: test
+  status: clear
+  threshold: 5
+- check: duration
+  name: long-connection
+  status: clear
+  threshold: 600

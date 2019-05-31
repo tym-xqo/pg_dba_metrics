@@ -6,7 +6,7 @@ SELECT pid
      , pg_blocking_pids(pid)
      , mode
      , granted
-     , age(clock_timestamp(), a.query_start) as duration
+     , extract(epoch FROM age(clock_timestamp(), query_start)) AS duration
   FROM P
   JOIN pg_locks
  USING (pid)
