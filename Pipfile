@@ -4,13 +4,15 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
-psycopg2-binary = "*"
 
 [packages]
 apscheduler = "*"
-arrow = "*"
-backports-functools-lru-cache = "*"
+pathlib = "*"
+psycopg2-binary = "*"
 python-dotenv = "*"
-records = "*"
-newrelic = "*"
 pyyaml = ">=4.2b1"
+records = "*"
+slackclient = "*"
+
+[pipenv]
+allow_prereleases = true

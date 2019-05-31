@@ -1,5 +1,6 @@
-select count(*) as locks
-     , mode
-     , granted 
-  from pg_locks 
- group by 2,3;
+SELECT count(*) AS locks,
+       mode,
+       granted
+  FROM pg_locks
+ GROUP BY 2,
+          3;
