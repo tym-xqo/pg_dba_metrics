@@ -31,6 +31,8 @@ if os.getenv("METRIC_ENV", "development") == "development":
 
 load_dotenv(find_dotenv(), override=override)
 
+HOSTNAME = os.getenv("HOSTNAME", "localhost")
+
 FETCH_DB_URL = os.getenv("DATABASE_URL", "postgres://postgres@localhost/yardstick")
 STORE_DB_URL = os.getenv("STORE_DB_URL", FETCH_DB_URL)
 
@@ -72,10 +74,12 @@ def fetch_metric(name):
     return j
 
 
+# TODO: Better name for this function?
 def store_metric(name, as_json=False, quiet=False):
     """Insert metric query result in time series table in target database,
     or print JSON to stdout. Also send to alter_check unless quiet flag is set.
     """
+
     metric = fetch_metric(name)
 
     if not quiet:
@@ -85,8 +89,8 @@ def store_metric(name, as_json=False, quiet=False):
         print(json.dumps(metric, default=str))
         return
     sql = (
-        "insert into perf_metric (stamp, payload, name)"
-        "values (:stamp, :payload, :name)"
+        "insert into perf_metric (stamp, payload, name, host)"
+        "values (:stamp, :payload, :name, :host)"
     )
     # most metric queries return a single row, but loop here so we can store
     # more than one result
@@ -96,4 +100,4 @@ def store_metric(name, as_json=False, quiet=False):
         stamp = metric["stamp"]
         name = metric["name"]
         payload = json.dumps(i, default=str)
-        store_db.query(sql, stamp=stamp, payload=payload, name=name)
+        store_db.query(sql, stamp=stamp, payload=payload, name=name, host=HOSTNAME)

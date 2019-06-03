@@ -15,8 +15,6 @@ load_dotenv(find_dotenv(), override=override)
 
 HOSTNAME = os.getenv("HOSTNAME", "localhost")
 
-CONFIG = yaml.safe_load(open("config.yaml", "r"))
-
 
 def send_alert(metric, value):
     # TODO: include raw metric JSON as attachment
@@ -83,9 +81,11 @@ def check_metric(metric):
 
 
 def alert_check(metric):
+    with open("config.yaml", "r") as config_file:
+        config = yaml.safe_load(config_file.read())
     name = metric["name"]
-    if any(m["name"] == name for m in CONFIG):
-        config_match = list(filter(lambda m: m["name"] == name, CONFIG))[0]
+    if any(m["name"] == name for m in config):
+        config_match = list(filter(lambda m: m["name"] == name, config))[0]
         metric = dict(config_match, **metric)
         alert = check_metric(metric)
         return alert

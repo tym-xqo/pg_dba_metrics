@@ -34,7 +34,8 @@ def create_table():
         "metric_id bigserial primary key, "
         "stamp timestamp with time zone, "
         "payload jsonb, "
-        "name text)"
+        "name text, "
+        "host text)"
     )
     store_db.query(sql)
 
