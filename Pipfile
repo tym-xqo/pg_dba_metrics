@@ -14,3 +14,5 @@ python-dotenv = "*"
 pyyaml = ">=4.2b1"
 records = "*"
 slackclient = "<=1.3.2"
+SQLAlchemy = ">=1.3.0"
+
