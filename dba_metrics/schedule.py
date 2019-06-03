@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# -*- coding: future_fstrings -*--
 import argparse
 import glob
 import os
@@ -11,10 +13,13 @@ if os.getenv("METRIC_ENV", "development") == "development":
     override = True
 load_dotenv(find_dotenv(), override=override)
 
-INTERVAL = os.getenv("INTERVAL", 60)
+INTERVAL = int(os.getenv("INTERVAL", 60))
 
 
 def get_metrics(as_json=False, quiet=False):
+    """Loop through all the queries in query_files directory,
+    and submit for handling
+    """
     queries = [name for name in glob.glob("query_files/*")]
     metrics = [os.path.basename(name) for name in queries]
     for name in metrics:
@@ -26,7 +31,7 @@ def create_table():
     """
     sql = (
         "create table if not exists perf_metric( "
-        "metric_id bigserial primary key "
+        "metric_id bigserial primary key, "
         "stamp timestamp with time zone, "
         "payload jsonb, "
         "name text)"
@@ -35,6 +40,8 @@ def create_table():
 
 
 def schedule(as_json=False, quiet=False):
+    """Schedule get_metrics job in APScheduler, set to run at configured $INTERVAL
+    """
     scheduler = BlockingScheduler(timezone="UTC")
     scheduler.add_job(get_metrics, "interval", [as_json, quiet], seconds=INTERVAL)
     print("Press Ctrl+C to exit")
@@ -46,15 +53,21 @@ def schedule(as_json=False, quiet=False):
         pass
 
 
-if __name__ == "__main__":
+def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("-j", "--json", action="store_true", default=False)
-    parser.add_argument("-q", "--no-alerts", action="store_true", default=False)
+    parser.add_argument("-1", "--single")
     parser.add_argument("-s", "--schedule", action="store_true", default=False)
+    parser.add_argument("-q", "--no-alerts", action="store_true", default=False)
     args = parser.parse_args()
-    if not args.json:
+    if args.single:
+        name = f"{args.single}.sql"
+        store_metric(name=name, as_json=True, quiet=True)
+    elif args.schedule:
         create_table()
-    if args.schedule:
-        schedule(as_json=args.json, quiet=args.no_alerts)
+        schedule(as_json=False, quiet=args.no_alerts)
     else:
-        get_metrics(as_json=args.json, quiet=args.no_alerts)
+        get_metrics(as_json=True, quiet=args.no_alerts)
+
+
+if __name__ == "__main__":
+    main()

@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
+# -*- coding: future_fstrings -*-
 """Collect arbitrary SQL statements from a local directory, run against one
 database, and insert results to simple time series table (in the same or
 separate database) with timestamp and query name columns, and a jsonb column
@@ -35,9 +35,15 @@ FETCH_DB_URL = os.getenv("DATABASE_URL", "postgres://postgres@localhost/yardstic
 STORE_DB_URL = os.getenv("STORE_DB_URL", FETCH_DB_URL)
 
 # database to measure
-fetch_db = records.Database(FETCH_DB_URL)
+fetch_db = records.Database(
+    FETCH_DB_URL,
+    connect_args={"application_name": "pg_dba_metrics"}
+)
 # database to store metrics in
-store_db = records.Database(STORE_DB_URL)
+store_db = records.Database(
+    STORE_DB_URL,
+    connect_args={"application_name": "pg_dba_metrics"}
+)
 
 
 def get_sql(name):
@@ -67,7 +73,8 @@ def fetch_metric(name):
 
 
 def store_metric(name, as_json=False, quiet=False):
-    """Insert metric query result in time series table in target database
+    """Insert metric query result in time series table in target database,
+    or print JSON to stdout. Also send to alter_check unless quiet flag is set.
     """
     metric = fetch_metric(name)
 

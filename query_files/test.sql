@@ -1,1 +1,0 @@
-SELECT 33 as foo;

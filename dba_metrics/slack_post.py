@@ -1,6 +1,8 @@
+#!/usr/bin/env python
+# -*- coding: future_fstrings -*--
 import os
 
-import slack
+import slackclient
 from dotenv import find_dotenv, load_dotenv
 
 override = False
@@ -13,13 +15,16 @@ TOKEN = os.getenv("SLACK_TOKEN")
 CHANNEL = os.getenv("CHANNEL")
 HOSTNAME = os.getenv("HOSTNAME")
 
-client = slack.WebClient(TOKEN)
+client = slackclient.SlackClient(TOKEN)
 
 
 def slack_post(title="Test", message="Hello world!", color="#999999"):
     attach = dict(fallback=message, title=title, text=message, color=color)
-    r = client.chat_postMessage(
-        channel=CHANNEL, attachments=[attach], username=f"{HOSTNAME} DBA alert"
+    r = client.api_call(
+        "chat.postMessage",
+        channel=CHANNEL,
+        attachments=[attach],
+        username=f"{HOSTNAME} DBA alert"
     )
     return r
 

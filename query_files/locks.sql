@@ -1,4 +1,4 @@
-SELECT count(*) AS locks,
+SELECT count(*) AS lock_count,
        mode,
        granted
   FROM pg_locks

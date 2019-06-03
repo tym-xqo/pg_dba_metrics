@@ -7,5 +7,6 @@ select extract(epoch from age(clock_timestamp(), query_start)) as duration
   from pg_stat_activity
  where backend_type = 'client backend' 
    and state != 'idle' 
+   and application_name != 'pg_dba_metrics'
  order by 1 desc 
  limit 1;

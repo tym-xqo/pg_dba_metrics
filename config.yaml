@@ -1,12 +1,32 @@
-- check: test_data_point
-  name: test_metric
+- check: avg_duration
+  name: avg-active
   status: clear
-  threshold: 0
-- check: foo
-  name: test
+  threshold: 3
+- check: blocked_locks
+  name: blocked-count
   status: clear
   threshold: 5
 - check: duration
-  name: long-connection
+  name: blocked-locks
   status: clear
+  threshold: 15
+- check: duration
+  name: long-active
+  status: clear
+  threshold: 60
+- check: duration
+  name: waits
+  status: clear
+  threshold: 30
+- check: duration
+  name: long-connection
+  status: failure
   threshold: 600
+- check: io_wait_count
+  name: io-waits
+  status: clear
+  threshold: 5
+- check: lock_count
+  name: locks
+  status: failure
+  threshold: 1000

@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -
+# -*- coding: future_fstrings -*--
 import os
 from itertools import cycle
 
@@ -47,9 +47,9 @@ def update_config(metric):
     metric_config = {
         key: metric[key] for key in ("name", "check", "threshold", "status")
     }
-    new_config = [*config_match, metric_config]
+    config_match.append(metric_config)
     with open("config.yaml", "w") as config_file:
-        config_file.write(yaml.safe_dump(new_config))
+        config_file.write(yaml.safe_dump(config_match))
 
 
 def swap_status(status):
@@ -84,7 +84,7 @@ def alert_check(metric):
     name = metric["name"]
     if any(m["name"] == name for m in CONFIG):
         config_match = list(filter(lambda m: m["name"] == name, CONFIG))[0]
-        metric = {**config_match, **metric}
+        metric = dict(config_match, **metric)
         alert = check_metric(metric)
         return alert
     else:
