@@ -18,15 +18,15 @@
   name: waits
   status: clear
   threshold: 30
-- check: duration
-  name: long-connection
-  status: failure
-  threshold: 600
 - check: io_wait_count
   name: io-waits
   status: clear
   threshold: 5
 - check: lock_count
   name: locks
-  status: failure
+  status: clear
   threshold: 1000
+- check: duration
+  name: long-connection
+  status: clear
+  threshold: 600

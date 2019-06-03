@@ -68,8 +68,9 @@ def check_metric(metric):
     threshold = metric["threshold"]
     alert = None
 
-    for row in data:
-        value = row[check]
+    if data:
+        value = max([row[check] for row in data])
+
         test = value >= threshold
         if status == "failure":
             test = value < threshold
@@ -77,6 +78,7 @@ def check_metric(metric):
             metric["status"] = swap_status(status)
             alert = send_alert(metric, value)
             update_config(metric)
+    
     return alert
 
 
