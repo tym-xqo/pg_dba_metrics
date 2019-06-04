@@ -1,27 +1,11 @@
-- check: avg_duration
-  name: avg-active
-  status: clear
-  threshold: 3
 - check: blocked_locks
   name: blocked-count
   status: clear
-  threshold: 5
+  threshold: 1
 - check: duration
   name: blocked-locks
   status: clear
   threshold: 15
-- check: duration
-  name: long-active
-  status: clear
-  threshold: 60
-- check: duration
-  name: waits
-  status: clear
-  threshold: 30
-- check: io_wait_count
-  name: io-waits
-  status: clear
-  threshold: 5
 - check: lock_count
   name: locks
   status: clear
@@ -30,3 +14,27 @@
   name: long-connection
   status: clear
   threshold: 3600
+- check: foo
+  name: test
+  status: clear
+  threshold: 1
+- check: duration
+  name: waits
+  status: clear
+  threshold: 30
+- check: duration
+  name: long-active
+  status: clear
+  threshold: 60
+- check: avg_duration
+  name: avg-active
+  status: clear
+  threshold: 3
+- check: duration
+  name: xact-idle-time
+  status: clear
+  threshold: 10
+- check: io_wait_count
+  name: io-waits
+  status: clear
+  threshold: 5

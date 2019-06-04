@@ -1,28 +1,22 @@
 #!/usr/bin/env python
 # -*- coding: future_fstrings -*-
 """Collect arbitrary SQL statements from a local directory, run against one
-database, and insert results to simple time series table (in the same or
-separate database) with timestamp and query name columns, and a jsonb column
-for the data result.
+database. Return results as JSON. Optionally, insert results to simple time series table
+(in the same or separate database) with timestamp and query name columns, and a jsonb
+column for the data result.
 
-Best suited for monitoring metric-check queries that return a single row, but
-in case of multiple results will insert every row of the result set, with
-matching timestamp and name values
-
-Usage:
-    - As command-line script, with optional `[-j|--json]` argument will output
-    one JSON object per query, otherwise will start schedule to store in target
-    database
-    - Invoke from other python script with `query_checks.schedule()` or
-    `query_checks.get_metrics(as_json=True)`
+Best suited for monitoring metric-check queries that return a single row, but in case of
+multiple results will insert every row of the result set, with matching timestamp and
+name values
 """
 import json
 import os
 from datetime import datetime
 
 import records
-from alert import alert_check
+from dba_metrics.alert import alert_check
 from dotenv import find_dotenv, load_dotenv
+from pytz import utc
 from sqlalchemy.exc import ProgrammingError
 
 override = False
@@ -69,17 +63,16 @@ def fetch_metric(name):
         metric = dict(error=repr(e))
     j = {}
     j["data"] = metric
-    j["stamp"] = datetime.utcnow().isoformat()
+    j["stamp"] = utc.localize(datetime.utcnow()).isoformat()
     j["name"] = name.replace(".sql", "")
     return j
 
 
 # TODO: Better name for this function?
-def store_metric(name, as_json=False, quiet=False):
+def store_metric(name, as_json=True, quiet=False):
     """Insert metric query result in time series table in target database,
     or print JSON to stdout. Also send to alter_check unless quiet flag is set.
     """
-
     metric = fetch_metric(name)
 
     if not quiet:
@@ -92,10 +85,10 @@ def store_metric(name, as_json=False, quiet=False):
         "insert into perf_metric (stamp, payload, name, host)"
         "values (:stamp, :payload, :name, :host)"
     )
-    # most metric queries return a single row, but loop here so we can store
-    # more than one result
-    # NOTE: Also means we don't insert anything if results are empty (that's
-    # good)
+    # Most metric queries return a single row, but loop here so we can store
+    # more than one result if desired
+    # NOTE: This also means we don't insert anything if results are empty
+    # (that's good!)
     for i in metric["data"]:
         stamp = metric["stamp"]
         name = metric["name"]

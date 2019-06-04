@@ -11,6 +11,7 @@ if os.getenv("METRIC_ENV", "development") == "development":
 
 load_dotenv(find_dotenv(), override=override)
 
+# TODO: handle if the token or channel aren't set
 TOKEN = os.getenv("SLACK_TOKEN")
 CHANNEL = os.getenv("CHANNEL")
 HOSTNAME = os.getenv("HOSTNAME")
@@ -19,6 +20,8 @@ client = slackclient.SlackClient(TOKEN)
 
 
 def slack_post(title="Test", message="Hello world!", color="#999999"):
+    """Send a message to Slack (using 1.x API for python2 compatibility)
+    """
     attach = dict(fallback=message, title=title, text=message, color=color)
     r = client.api_call(
         "chat.postMessage",

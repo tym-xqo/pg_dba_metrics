@@ -5,7 +5,7 @@ import glob
 import os
 
 from apscheduler.schedulers.blocking import BlockingScheduler
-from check import store_db, store_metric
+from dba_metrics.check import store_db, store_metric
 from dotenv import find_dotenv, load_dotenv
 
 override = False
@@ -16,7 +16,7 @@ load_dotenv(find_dotenv(), override=override)
 INTERVAL = int(os.getenv("INTERVAL", 60))
 
 
-def get_metrics(as_json=False, quiet=False):
+def get_metrics(as_json=True, quiet=False):
     """Loop through all the queries in query_files directory,
     and submit for handling
     """
@@ -55,6 +55,8 @@ def schedule(as_json=False, quiet=False):
 
 
 def main():
+    """Handle arguments and handoff to appropriate methods
+    """
     parser = argparse.ArgumentParser()
     parser.add_argument("-1", "--single")
     parser.add_argument("-s", "--schedule", action="store_true", default=False)
@@ -62,7 +64,7 @@ def main():
     args = parser.parse_args()
     if args.single:
         name = f"{args.single}.sql"
-        store_metric(name=name, as_json=True, quiet=True)
+        store_metric(name=name, as_json=True, quiet=args.no_alerts)
     elif args.schedule:
         create_table()
         schedule(as_json=False, quiet=args.no_alerts)
