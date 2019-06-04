@@ -7,4 +7,4 @@ WORKDIR /app
 
 RUN pip3 install --upgrade pip pipenv && pipenv install --system
 
-CMD python3 dba_metrics/query_checks.py
+CMD dba_metrics
