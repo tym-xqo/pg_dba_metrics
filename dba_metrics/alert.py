@@ -6,6 +6,7 @@ from itertools import cycle
 import yaml
 from dotenv import find_dotenv, load_dotenv
 from dba_metrics.slack_post import slack_post
+from dba_metrics.sql_fm import parse_frontmatter, update_config
 
 override = False
 if os.getenv("METRIC_ENV", "development") == "development":
@@ -39,21 +40,6 @@ def send_alert(metric):
 
     alert = slack_post(title=title, message=message, color=color)
     return alert
-
-
-def update_config(metric):
-    """Rewrite config with new status after change
-    """
-    with open("config.yaml", "r") as config_file:
-        config = yaml.safe_load(config_file.read())
-    name = metric["name"]
-    config_match = list(filter(lambda m: m["name"] != name, config))
-    metric_config = {
-        key: metric[key] for key in ("name", "check", "threshold", "status")
-    }
-    config_match.append(metric_config)
-    with open("config.yaml", "w") as config_file:
-        config_file.write(yaml.safe_dump(config_match))
 
 
 def swap_status(status):
@@ -93,16 +79,12 @@ def check_metric(metric):
 
 
 def alert_check(metric):
-    """Test whether metric name is found in threshold config, and
-    append config settings to metric results if so, then
-    pass to alerting methods
+    """If metric has threshold frontmatter, append metadata
+    to metric results and pass to alerting methods
     """
-    with open("config.yaml", "r") as config_file:
-        config = yaml.safe_load(config_file.read())
-    name = metric["name"]
-    if any(m["name"] == name for m in config):
-        config_match = list(filter(lambda m: m["name"] == name, config))[0]
-        metric = dict(config_match, **metric)
+    metadata = parse_frontmatter(metric)
+    if metadata:
+        metric = dict(metric, **metadata)
         alert = check_metric(metric)
         return alert
     else:

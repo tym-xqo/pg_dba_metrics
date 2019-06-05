@@ -1,7 +1,6 @@
 /*---
 check: foo
 status: clear
-threshold: 1
+threshold: 9
 ---*/
-
 SELECT 7 as foo;

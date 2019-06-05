@@ -15,6 +15,7 @@ from datetime import datetime
 
 import records
 from dba_metrics.alert import alert_check
+from dba_metrics.sql_fm import get_sql
 from dotenv import find_dotenv, load_dotenv
 from pytz import utc
 from sqlalchemy.exc import ProgrammingError
@@ -42,34 +43,25 @@ store_db = records.Database(
 )
 
 
-def get_sql(name):
-    """Read sql from file matching name and return as SQL string
-    """
-    query_file = os.path.join("query_files", name)
-    with open(query_file) as f:
-        query_sql = f.read()
-    return query_sql
-
-
 def fetch_metric(name):
     """Submit query to the database, return results in a dict with timestamp
     and query name nodes appended
     """
     sql = get_sql(name)
     try:
-        metric_result = fetch_db.query(sql)
-        metric = metric_result.as_dict()
+        result = fetch_db.query(sql)
+        data = result.as_dict()
     except ProgrammingError as e:
-        metric = dict(error=repr(e))
+        data = dict(error=repr(e))
     j = {}
-    j["data"] = metric
+    j["data"] = data
     j["stamp"] = utc.localize(datetime.utcnow()).isoformat()
     j["name"] = name.replace(".sql", "")
     return j
 
 
-# TODO: Better name for this function?
-def store_metric(name, as_json=True, quiet=False):
+# TODO: Refactor to separate methods for JSON vs Database table
+def output_metric(name, as_json=True, quiet=False):
     """Insert metric query result in time series table in target database,
     or print JSON to stdout. Also send to alter_check unless quiet flag is set.
     """
@@ -79,6 +71,7 @@ def store_metric(name, as_json=True, quiet=False):
         alert_check(metric)
 
     if as_json:
+        # TODO: better serialization default method
         print(json.dumps(metric, default=str))
         return
     sql = (

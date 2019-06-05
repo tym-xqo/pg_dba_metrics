@@ -1,3 +1,8 @@
+/*---
+check: duration
+status: clear
+threshold: 15
+---*/
   WITH p AS (
        SELECT DISTINCT pid 
          FROM pg_locks 

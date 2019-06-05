@@ -1,3 +1,9 @@
+/*---
+check: duration
+name: xact-idle-time
+status: clear
+threshold: 10
+---*/
   WITH i AS (
 SELECT pid
      , usename
@@ -8,7 +14,7 @@ WHERE backend_type = 'client backend'
   AND state = 'idle in transaction'
 ORDER BY 4 desc
 LIMIT 1)
-SELECT * from i 
+SELECT * FROM i 
 UNION
 SELECT 0, 'no user', 'no query', 0
- WHERE NOT EXISTS (select * from i)
+ WHERE NOT EXISTS (SELECT * FROM i)
