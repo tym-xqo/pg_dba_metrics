@@ -1,4 +1,4 @@
-  WITH P AS (
+  WITH p AS (
        SELECT DISTINCT pid 
          FROM pg_locks 
         WHERE NOT granted)
@@ -7,8 +7,12 @@ SELECT pid
      , mode
      , granted
      , extract(epoch FROM age(clock_timestamp(), query_start)) AS duration
-  FROM P
+  FROM p
   JOIN pg_locks
  USING (pid)
   JOIN pg_stat_activity a
- USING (pid);
+ USING (pid)
+ UNION
+SELECT -1, NULL, NULL, True, 0
+ WHERE NOT EXISTS (SELECT * 
+                     FROM p)

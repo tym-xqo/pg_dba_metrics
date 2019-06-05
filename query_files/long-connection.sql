@@ -1,11 +1,18 @@
-select extract(epoch from age(clock_timestamp(), query_start)) as duration
+WITH c AS (
+SELECT extract(epoch FROM age(clock_timestamp(), query_start)) AS duration
      , pid
      , usename
      , application_name
      , state
-     , left(query, 80) as query
-  from pg_stat_activity
- where backend_type = 'client backend' 
-   and query_start is not null
- order by 1 desc 
- limit 1;
+     , left(query, 80) AS query
+  FROM pg_stat_activity
+ WHERE backend_type = 'client backend'
+   AND query_start IS NOT NULL
+ ORDER BY 1 DESC
+ LIMIT 1)
+SELECT *
+  FROM c
+ UNION
+SELECT 0, -1, NULL, NULL, 'idle', ''
+ WHERE NOT EXISTS (SELECT * from c)
+;
