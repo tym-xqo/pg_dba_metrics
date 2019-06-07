@@ -1,54 +1,76 @@
-#!/usr/bin/env python
-# -*- coding: future_fstrings -*--
 import argparse
-import glob
+import json
 import os
 
+import records
 from apscheduler.schedulers.blocking import BlockingScheduler
-from dba_metrics.alert import alert_check
-from dba_metrics.check import print_metric, store_db, store_metric
 from dotenv import find_dotenv, load_dotenv
+from nerium import formatter, query
+from pathlib import Path
 
 override = False
 if os.getenv("METRIC_ENV", "development") == "development":
     override = True
+
 load_dotenv(find_dotenv(), override=override)
 
+HOSTNAME = os.getenv("HOSTNAME", "localhost")
 INTERVAL = int(os.getenv("INTERVAL", 60))
+DATABASE_URL = os.getenv("DATABASE_URL", "postgres://postgres@localhost/yardstick")
+STORE_DB_URL = os.getenv("STORE_DB_URL", DATABASE_URL)
 
 
-def get_metrics(output_function, quiet=False):
-    """Loop through all the queries in query_files directory,
-    and submit for handling
-    """
-    queries = [name for name in glob.glob("query_files/*")]
-    metrics = [os.path.basename(name) for name in queries]
-
-    for name in metrics:
-        output_function(name)
-        if not quiet:
-            alert_check(name)
+def get_metric(name):
+    metric = query.get_result_set(name)
+    metric.executed += "Z"
+    return metric
 
 
-def create_table():
-    """Create table for storing metrics in target database if not present
-    """
-    sql = (
-        "create table if not exists perf_metric( "
-        "metric_id bigserial primary key, "
-        "stamp timestamp with time zone, "
-        "payload jsonb, "
-        "name text, "
-        "host text)"
+def print_metric(name):
+    metric = get_metric(name)
+    format = formatter.get_format("print")
+    formatted = json.dumps(format.dump(metric).data)
+    return formatted
+
+
+def store_metric(name):
+    # database to store metrics in
+    store_db = records.Database(
+        STORE_DB_URL, connect_args={"application_name": "pg_dba_metrics"}
     )
-    store_db.query(sql)
+    metric = get_metric(name)
+    sql = (
+        "insert into perf_metric (stamp, payload, name, host) "
+        "values (:stamp, :payload, :name, :host) "
+        "returning metric_id"
+    )
+    for i in metric.result:
+        stamp = metric.executed
+        payload = json.dumps(i, default=str)
+        insert = store_db.query(
+            sql, stamp=stamp, payload=payload, name=name, host=HOSTNAME
+        )
+        return insert.export("json")
 
 
-def schedule(quiet=False):
+def all_metrics():
+    metrics = list(Path(os.getenv("QUERY_PATH", "query_files")).glob("**/*"))
+    metric_names = [metric.stem for metric in metrics]
+    return metric_names
+
+
+def output_all(output_function):
+    metrics = all_metrics()
+    for name in metrics:
+        output = output_function(name)
+        yield output
+
+
+def schedule(scheduled_function, *args):
     """Schedule get_metrics job in APScheduler, set to run at configured $INTERVAL
     """
     scheduler = BlockingScheduler(timezone="UTC")
-    scheduler.add_job(get_metrics, "interval", [True, quiet], seconds=INTERVAL)
+    scheduler.add_job(scheduled_function, "interval", [args], seconds=INTERVAL)
     print("Press Ctrl+C to exit")
 
     # Execution will block here until Ctrl+C is pressed.
@@ -58,28 +80,10 @@ def schedule(quiet=False):
         pass
 
 
-def main():
-    """Handle arguments and handoff to appropriate methods
-    """
+if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("mode", choices=["print", "store"], default="print")
-    parser.add_argument("-n", "--name", nargs="?")
+    parser.add_argument("-n", "--name")
+    parser.add_argument("-s", "--store", action="store_true", default=False)
+    parser.add_argument("-S", "--schedule", action="store_true", default=False)
     parser.add_argument("-q", "--no-alerts", action="store_true", default=False)
     args = parser.parse_args()
-
-    output_function = print_metric
-    if args.mode == "store":
-        create_table()
-        output_function = store_metric
-
-    if args.name:
-        name = f"{args.metric_name}.sql"
-        output_function(name=name)
-        if not args.no_alerts:
-            alert_check(name)
-    else:
-        get_metrics(output_function, quiet=args.no_alerts)
-
-
-if __name__ == "__main__":
-    main()
