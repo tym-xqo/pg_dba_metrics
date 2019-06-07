@@ -5,8 +5,8 @@ from itertools import cycle
 
 import yaml
 from dotenv import find_dotenv, load_dotenv
+from dba_metrics.check import fetch_metric
 from dba_metrics.slack_post import slack_post
-from dba_metrics.sql_fm import parse_frontmatter, update_config
 
 override = False
 if os.getenv("METRIC_ENV", "development") == "development":
@@ -52,6 +52,21 @@ def swap_status(status):
     return new_status
 
 
+def update_config(metric):
+    """Rewrite sql metadata with new status after change
+    """
+    sql = metric["sql"]
+    metadata = {
+        key: metric[key] for key in ("check", "threshold", "status")
+    }
+    metadata_yaml = yaml.safe_dump(metadata)
+    metadata_block = f"/*---\n{metadata_yaml}---*/"
+    query_file = os.path.join("query_files", f"{metric['name']}.sql")
+    with open(query_file, "w") as config_file:
+        new_content = "\n".join([metadata_block, sql])
+        config_file.write(new_content)
+
+
 def check_metric(metric):
     """Compare metric check value against threshold;
     Update status and send alert if comparsison triggers status change
@@ -78,19 +93,20 @@ def check_metric(metric):
     return alert
 
 
-def alert_check(metric):
-    """If metric has threshold frontmatter, append metadata
+def alert_check(name):
+    """If metric has threshold front matter, append metadata
     to metric results and pass to alerting methods
     """
+    metric = fetch_metric(name)
     metadata = parse_frontmatter(metric)
     if metadata:
         metric = dict(metric, **metadata)
         alert = check_metric(metric)
         return alert
     else:
+        # no-op if metric doesn't have threshold metadata
         pass
 
 
 if __name__ == "__main__":
-    metric = {"data": [{"test_data_point": -1}], "name": "test_metric"}
-    alert_check(metric)
+    alert_check("test.sql")
