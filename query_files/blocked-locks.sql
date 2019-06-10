@@ -1,8 +1,9 @@
-/*---
-check: duration
+---
 status: clear
-threshold: 15
----*/
+threshold:
+  field: duration
+  gate: 10
+---
   WITH p AS (
        SELECT DISTINCT pid 
          FROM pg_locks 

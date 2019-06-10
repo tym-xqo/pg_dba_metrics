@@ -1,9 +1,9 @@
-/*---
-check: duration
-name: xact-idle-time
+---
 status: clear
-threshold: 10
----*/
+threshold:
+  field: duration
+  gate: 10
+---
   WITH i AS (
 SELECT pid
      , usename
