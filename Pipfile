@@ -6,4 +6,9 @@ verify_ssl = true
 [dev-packages]
 
 [packages]
-dba-metrics = {editable = true,path = "."}
+apscheduler = "*"
+pg8000 = "*"
+nerium = {git = "https://github.com/tym-xqo/nerium",ref = "7686b0a"}
+
+[requires]
+python_version = "3.7"

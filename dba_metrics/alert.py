@@ -93,11 +93,10 @@ def check_metric(metric):
     return alert
 
 
-def alert_check(name):
+def alert_check(metric):
     """If metric has threshold front matter, append metadata
     to metric results and pass to alerting methods
     """
-    metric = fetch_metric(name)
     metadata = parse_frontmatter(metric)
     if metadata:
         metric = dict(metric, **metadata)
