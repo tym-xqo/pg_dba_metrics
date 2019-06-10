@@ -5,7 +5,9 @@ import os
 import records
 from apscheduler.schedulers.blocking import BlockingScheduler
 from dotenv import find_dotenv, load_dotenv
-from nerium import formatter, query
+from nerium.query import get_result_set
+from nerium.formatter import get_format
+from .alert import alert_check
 from pathlib import Path
 
 override = False
@@ -20,15 +22,16 @@ DATABASE_URL = os.getenv("DATABASE_URL", "postgres://postgres@localhost/yardstic
 STORE_DB_URL = os.getenv("STORE_DB_URL", DATABASE_URL)
 
 
-def get_metric(name):
-    metric = query.get_result_set(name)
+def get_metric(name, quiet=False):
+    metric = get_result_set(name)
     metric.executed += "Z"
+    alert_check(metric)
     return metric
 
 
 def print_metric(name):
     metric = get_metric(name)
-    format = formatter.get_format("print")
+    format = get_format("print")
     formatted = json.dumps(format.dump(metric).data)
     return formatted
 
@@ -85,5 +88,13 @@ if __name__ == "__main__":
     parser.add_argument("-n", "--name")
     parser.add_argument("-s", "--store", action="store_true", default=False)
     parser.add_argument("-S", "--schedule", action="store_true", default=False)
-    parser.add_argument("-q", "--no-alerts", action="store_true", default=False)
     args = parser.parse_args()
+    quiet = args.no_alerts
+    output_function = print_metric
+    if args.store:
+        output_function = store_metric
+    if args.schedule:
+        o = schedule(output_function)
+    o = output_all(print_metric)
+    for i in o:
+        print(i)
