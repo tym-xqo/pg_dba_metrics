@@ -4,7 +4,7 @@ threshold:
   field: duration
   gate: 30
 ---
-  WITH w AS(
+WITH w AS(
 SELECT extract(epoch FROM max(age(clock_timestamp(), query_start))) AS duration,
        wait_event_type,
        pid

@@ -1,14 +1,15 @@
 import argparse
 import json
 import os
+from pathlib import Path
 
 import records
 from apscheduler.schedulers.blocking import BlockingScheduler
+
+from dba_metrics.alert import check_metric
 from dotenv import find_dotenv, load_dotenv
-from nerium.query import get_result_set
 from nerium.formatter import get_format
-from .alert import alert_check
-from pathlib import Path
+from nerium.query import get_result_set
 
 override = False
 if os.getenv("METRIC_ENV", "development") == "development":
@@ -25,7 +26,7 @@ STORE_DB_URL = os.getenv("STORE_DB_URL", DATABASE_URL)
 def get_metric(name, quiet=False):
     metric = get_result_set(name)
     metric.executed += "Z"
-    alert_check(metric)
+    check_metric(metric)
     return metric
 
 
@@ -62,18 +63,22 @@ def all_metrics():
     return metric_names
 
 
-def output_all(output_function):
-    metrics = all_metrics()
+def output_all(output_function, name="all"):
+    if name == "all":
+        metrics = all_metrics()
+    else:
+        metrics = [name]
     for name in metrics:
         output = output_function(name)
-        yield output
+        print(output)
+        # yield output
 
 
-def schedule(scheduled_function, *args):
+def schedule(output_function, name="all"):
     """Schedule get_metrics job in APScheduler, set to run at configured $INTERVAL
     """
     scheduler = BlockingScheduler(timezone="UTC")
-    scheduler.add_job(scheduled_function, "interval", [args], seconds=INTERVAL)
+    scheduler.add_job(output_all, "interval", [output_function, name], seconds=INTERVAL)
     print("Press Ctrl+C to exit")
 
     # Execution will block here until Ctrl+C is pressed.
@@ -85,16 +90,16 @@ def schedule(scheduled_function, *args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("-n", "--name")
+    parser.add_argument("name", nargs="?", default="all")
     parser.add_argument("-s", "--store", action="store_true", default=False)
     parser.add_argument("-S", "--schedule", action="store_true", default=False)
     args = parser.parse_args()
-    quiet = args.no_alerts
+
     output_function = print_metric
     if args.store:
         output_function = store_metric
+
     if args.schedule:
-        o = schedule(output_function)
-    o = output_all(print_metric)
-    for i in o:
-        print(i)
+        schedule(output_function, args.name)
+    else:
+        results = output_all(output_function, args.name)

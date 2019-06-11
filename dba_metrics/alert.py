@@ -5,8 +5,8 @@ from itertools import cycle
 
 import yaml
 from dotenv import find_dotenv, load_dotenv
-from dba_metrics.check import fetch_metric
 from dba_metrics.slack_post import slack_post
+from nerium.formatter import get_format
 
 override = False
 if os.getenv("METRIC_ENV", "development") == "development":
@@ -20,12 +20,14 @@ HOSTNAME = os.getenv("HOSTNAME", "localhost")
 def send_alert(metric):
     """Post a message to Slack when a metric check fails or clears.
     """
-    name = metric["name"]
-    check = metric["check"]
-    threshold = metric["threshold"]
-    status = metric["status"]
-    value = metric["value"]
-    full_metric = yaml.safe_dump(metric)
+    name = metric.name
+    check = metric.metadata["threshold"]["field"]
+    threshold = metric.metadata["threshold"]["gate"]
+    status = metric.metadata["status"]
+    value = metric.value
+
+    format = get_format("print")
+    full_metric = yaml.safe_dump(format.dump(metric).data)
 
     title = f"{HOSTNAME} {status}"
 
@@ -55,15 +57,13 @@ def swap_status(status):
 def update_config(metric):
     """Rewrite sql metadata with new status after change
     """
-    sql = metric["sql"]
-    metadata = {
-        key: metric[key] for key in ("check", "threshold", "status")
-    }
+    sql = metric.body
+    metadata = metric.metadata
     metadata_yaml = yaml.safe_dump(metadata)
-    metadata_block = f"/*---\n{metadata_yaml}---*/"
-    query_file = os.path.join("query_files", f"{metric['name']}.sql")
+    metadata_block = f"---\n{metadata_yaml}---"
+    query_file = os.path.join("query_files", f"{metric.name}.sql")
     with open(query_file, "w") as config_file:
-        new_content = "\n".join([metadata_block, sql])
+        new_content = "\n".join([metadata_block, sql, ''])
         config_file.write(new_content)
 
 
@@ -72,40 +72,31 @@ def check_metric(metric):
     Update status and send alert if comparsison triggers status change
     """
     # TODO: Support failure modes other than `> threshold`
-    data = metric["data"]
-    status = metric["status"]
-    check = metric["check"]
-    threshold = metric["threshold"]
     alert = None
+    try:
+        data = metric.result
+        status = metric.metadata["status"]
+        check = metric.metadata["threshold"]["field"]
+        threshold = metric.metadata["threshold"]["gate"]
+    except (KeyError, AttributeError):
+        return alert
+
+    if status == "pause":
+        return alert
 
     if data:
         value = max([row[check] for row in data])
-        metric["value"] = value
-
+        metric.value = value
         test = value >= threshold
         if status == "failure":
             test = value < threshold
         if test:
-            metric["status"] = swap_status(status)
+            metric.metadata["status"] = swap_status(status)
             alert = send_alert(metric)
             update_config(metric)
 
     return alert
 
 
-def alert_check(metric):
-    """If metric has threshold front matter, append metadata
-    to metric results and pass to alerting methods
-    """
-    metadata = parse_frontmatter(metric)
-    if metadata:
-        metric = dict(metric, **metadata)
-        alert = check_metric(metric)
-        return alert
-    else:
-        # no-op if metric doesn't have threshold metadata
-        pass
-
-
 if __name__ == "__main__":
-    alert_check("test.sql")
+    check_metric()("test.sql")

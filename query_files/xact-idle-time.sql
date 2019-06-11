@@ -4,7 +4,7 @@ threshold:
   field: duration
   gate: 10
 ---
-  WITH i AS (
+WITH i AS (
 SELECT pid
      , usename
      , left(query, 80) AS query
