@@ -1,3 +1,9 @@
+---
+status: clear
+threshold:
+  field: avg_duration
+  gate: 7
+---
 WITH h AS (
         SELECT extract(epoch FROM age(clock_timestamp(), query_start)) AS duration
           FROM pg_stat_activity

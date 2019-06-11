@@ -1,7 +1,7 @@
-/*---
-check: foo
+---
 status: clear
-threshold: 1
----*/
-
+threshold:
+  field: foo
+  gate: 2
+---
 SELECT 7 as foo;

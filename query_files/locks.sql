@@ -1,3 +1,9 @@
+---
+status: clear
+threshold:
+   field: lock_count
+   gate: 1000
+---
 SELECT count(*) AS lock_count
      , mode
      , granted
