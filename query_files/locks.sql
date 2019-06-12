@@ -1,5 +1,5 @@
 ---
-status: failure
+status: clear
 threshold:
   field: lock_count
   gate: 1000

@@ -14,6 +14,7 @@ SELECT extract(epoch FROM age(clock_timestamp(), query_start)) AS duration
   FROM pg_stat_activity
  WHERE backend_type = 'client backend'
    AND query_start IS NOT NULL
+   AND application_name != 'pg_dba_metrics'
  ORDER BY 1 DESC
  LIMIT 1)
 SELECT *
