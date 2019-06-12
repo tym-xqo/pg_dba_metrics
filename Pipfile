@@ -6,6 +6,9 @@ verify_ssl = true
 [dev-packages]
 
 [packages]
-nerium = {editable = true,git = "https://github.com/tym-xqo/nerium",ref = "7686b0a"}
 apscheduler = "*"
+dba-metrics = {editable = true,path = "."}
+nerium = {editable = true,git = "https://github.com/tym-xqo/nerium",ref = "b4d99a3"}
+# nerium = {editable = true, path = "../nerium"}
 pg8000 = "*"
+slackclient = "*"

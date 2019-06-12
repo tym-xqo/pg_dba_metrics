@@ -1,8 +1,8 @@
 ---
-status: clear
+status: failure
 threshold:
-   field: lock_count
-   gate: 1000
+  field: lock_count
+  gate: 1000
 ---
 SELECT count(*) AS lock_count
      , mode

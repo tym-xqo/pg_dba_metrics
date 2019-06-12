@@ -8,7 +8,7 @@ setup(
     description="Script to run check queries on postgres",
     author="Thomas Yager-Madden",
     author_email="tym@benchprep.com",
-    install_requires=["apscheduler", "nerium", "pg8000"],
+    install_requires=["apscheduler", "nerium", "pg8000", "slackclient"],
     entry_points={"console_scripts": ["dba_metrics = dba_metrics.__main__:main"]},
     classifiers=[
         "Development Status :: 3 - Alpha",

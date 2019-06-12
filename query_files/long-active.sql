@@ -1,5 +1,5 @@
 ---
-status: clear
+status: failure
 threshold:
   field: duration
   gate: 60

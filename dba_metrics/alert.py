@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: future_fstrings -*--
+# -*- coding: utf-8 -*--
 import os
 from itertools import cycle
 
@@ -63,7 +63,7 @@ def update_config(metric):
     metadata_block = f"---\n{metadata_yaml}---"
     query_file = os.path.join("query_files", f"{metric.name}.sql")
     with open(query_file, "w") as config_file:
-        new_content = "\n".join([metadata_block, sql, ''])
+        new_content = "\n".join([metadata_block, sql, ""])
         config_file.write(new_content)
 
 
