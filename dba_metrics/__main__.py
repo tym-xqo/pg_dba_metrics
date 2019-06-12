@@ -24,6 +24,10 @@ INTERVAL = int(os.getenv("INTERVAL", 60))
 DATABASE_URL = os.getenv("DATABASE_URL", "postgres://postgres@localhost/yardstick")
 STORE_DB_URL = os.getenv("STORE_DB_URL", DATABASE_URL)
 
+store_db = records.Database(
+    STORE_DB_URL, connect_args={"application_name": "pg_dba_metrics"}
+)
+
 
 def get_metric(name, quiet=False):
     metric = get_result_set(name)
@@ -41,9 +45,6 @@ def print_metric(name):
 
 def store_metric(name):
     # database to store metrics in
-    store_db = records.Database(
-        STORE_DB_URL, connect_args={"application_name": "pg_dba_metrics"}
-    )
     metric = get_metric(name)
     sql = (
         "insert into perf_metric (stamp, payload, name, host) "
@@ -90,6 +91,20 @@ def schedule(output_function, name="all"):
         pass
 
 
+def create_table():
+    """Create table for storing metrics in target database if not present
+    """
+    sql = (
+        "create table if not exists perf_metric( "
+        "metric_id bigserial primary key, "
+        "stamp timestamp with time zone, "
+        "payload jsonb, "
+        "name text, "
+        "host text)"
+    )
+    store_db.query(sql)
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("name", nargs="?", default="all")
@@ -99,6 +114,7 @@ if __name__ == "__main__":
 
     output_function = print_metric
     if args.store:
+        create_table()
         output_function = store_metric
 
     if args.schedule:
