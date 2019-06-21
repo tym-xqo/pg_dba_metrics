@@ -107,7 +107,7 @@ def create_table():
     store_db.query(sql)
 
 
-if __name__ == "__main__":
+def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("name", nargs="?", default="all")
     parser.add_argument("-s", "--store", action="store_true", default=False)
@@ -122,4 +122,8 @@ if __name__ == "__main__":
     if args.schedule:
         schedule(output_function, args.name)
     else:
-        results = output_all(output_function, args.name)
+        output_all(output_function, args.name)
+
+
+if __name__ == "__main__":
+    main()
