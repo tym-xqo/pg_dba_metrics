@@ -27,12 +27,14 @@ STORE_DB_URL = os.getenv("STORE_DB_URL", DATABASE_URL)
 store_db = records.Database(
     STORE_DB_URL, connect_args={"application_name": "pg_dba_metrics"}
 )
+stopfile = Path("/tmp/dba-alert-pause")
 
 
 def get_metric(name, quiet=False):
     metric = get_result_set(name)
     metric.executed += "Z"
-    check_metric(metric)
+    if not stopfile.exists():
+        check_metric(metric)
     return metric
 
 
