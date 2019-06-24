@@ -1,10 +1,10 @@
 ---
-status: clear
+status: failure
 threshold:
   field: duration
   gate: 10
 ---
-  WITH p AS (
+WITH p AS (
        SELECT DISTINCT pid 
          FROM pg_locks 
         WHERE NOT granted)

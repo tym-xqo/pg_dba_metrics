@@ -1,5 +1,5 @@
 ---
-status: clear
+status: failure
 threshold:
   field: blocked_locks
   gate: 1

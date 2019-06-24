@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+# TODO: Add status & threshold to output and table
 import argparse
 import json
 import os
@@ -7,7 +8,6 @@ from pathlib import Path
 
 import records
 from apscheduler.schedulers.blocking import BlockingScheduler
-
 from dba_metrics.alert import check_metric
 from dotenv import find_dotenv, load_dotenv
 from nerium.formatter import get_format
@@ -44,7 +44,6 @@ def print_metric(name):
 
 
 def store_metric(name):
-    # database to store metrics in
     metric = get_metric(name)
     sql = (
         "insert into perf_metric (stamp, payload, name, host) "
