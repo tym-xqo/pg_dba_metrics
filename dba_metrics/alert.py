@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*--
 import os
 from itertools import cycle
+from pathlib import Path
 
 import yaml
 from dotenv import find_dotenv, load_dotenv
@@ -15,6 +16,7 @@ if os.getenv("METRIC_ENV", "development") == "development":
 load_dotenv(find_dotenv(), override=override)
 
 HOSTNAME = os.getenv("HOSTNAME", "localhost")
+stopfile = Path("/tmp/dba-alert-pause")
 
 
 def send_alert(metric):
@@ -73,6 +75,9 @@ def check_metric(metric):
     """
     # TODO: Support failure modes other than `> threshold`
     alert = None
+    if stopfile.exists():
+        return alert
+
     try:
         data = metric.result
         status = metric.metadata["status"]
