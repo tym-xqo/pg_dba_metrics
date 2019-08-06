@@ -1,5 +1,5 @@
 ---
-status: failure
+status: clear
 threshold:
   field: avg_duration
   gate: 7
