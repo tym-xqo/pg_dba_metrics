@@ -1,8 +1,8 @@
 ---
-status: failure
+status: clear
 threshold:
   field: duration
-  gate: 30
+  gate: 120
 ---
 WITH w AS(
 SELECT extract(epoch FROM max(age(clock_timestamp(), query_start))) AS duration,

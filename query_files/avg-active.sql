@@ -1,5 +1,5 @@
 ---
-status: clear
+status: pause
 threshold:
   field: avg_duration
   gate: 7
