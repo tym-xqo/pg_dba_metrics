@@ -33,7 +33,7 @@ store_db = records.Database(
 def get_metric(name, quiet=False):
     metric = get_result_set(name)
     metric.executed += "Z"
-    check_metric(metric)
+    metric = check_metric(metric)
     return metric
 
 
@@ -46,16 +46,43 @@ def print_metric(name):
 
 def store_metric(name):
     metric = get_metric(name)
+    # fmt: off
     sql = (
-        "insert into perf_metric (stamp, payload, name, host) "
-        "values (:stamp, :payload, :name, :host) "
+        "INSERT into perf_metric ("
+        "   stamp, "
+        "   payload, "
+        "   name, "
+        "   host, "
+        "   status, "
+        "   threshold_field, "
+        "   threshold_gate) "
+        "VALUES ("
+        "   :stamp, "
+        "   :payload, "
+        "   :name, "
+        "   :host, "
+        "   :status, "
+        "   :threshold_field, "
+        "   :threshold_gate) "
         "returning metric_id"
     )
+    # fmt: on
     for i in metric.result:
         stamp = metric.executed
         payload = json.dumps(i, default=str)
+        status = metric.status
+        threshold_field = metric.threshold["field"]
+        threshold_gate = str(metric.threshold["gate"])
+        print(stamp, payload, status, threshold_field, threshold_gate)
         insert = store_db.query(
-            sql, stamp=stamp, payload=payload, name=name, host=HOSTNAME
+            sql,
+            stamp=stamp,
+            payload=payload,
+            name=name,
+            host=HOSTNAME,
+            status=status,
+            threshold_field=threshold_field,
+            threshold_gate=threshold_gate,
         )
         return insert.export("json")
 
@@ -100,7 +127,10 @@ def create_table():
         "stamp timestamp with time zone, "
         "payload jsonb, "
         "name text, "
-        "host text)"
+        "host text, "
+        "status text, "
+        "threshold_field text, "
+        "threshold_gate int)"
     )
     store_db.query(sql)
 

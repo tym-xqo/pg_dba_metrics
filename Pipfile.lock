@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "92c798b0f4a73b3af3550028768b27d9dcdb118c1afa8e8cb9b5c8825c4508c7"
+            "sha256": "61b7ff488696101ccaeeda9f50dd8ac36a019f9fb9ad7b3a8ae2a55710c58fd9"
         },
         "pipfile-spec": 6,
         "requires": {},
@@ -84,6 +84,13 @@
             ],
             "version": "==3.0.4"
         },
+        "click": {
+            "hashes": [
+                "sha256:2335065e6395b9e67ca716de5f7526736bfa6ceead690adf616d925bdc622b13",
+                "sha256:5b94b49521f6456670fdb30cd82a4eca9412788a93fa6dd6df72c94d5a8ff2d7"
+            ],
+            "version": "==7.0"
+        },
         "dba-metrics": {
             "editable": true,
             "path": "."
@@ -107,12 +114,26 @@
             ],
             "version": "==1.0.1"
         },
+        "flask": {
+            "hashes": [
+                "sha256:13f9f196f330c7c2c5d7a5cf91af894110ca0215ac051b5844701f2bfd934d52",
+                "sha256:45eb5a6fd193d6cf7e0cf5d8a5b31f83d5faae0293695626f539a823e93b13f6"
+            ],
+            "version": "==1.1.1"
+        },
         "idna": {
             "hashes": [
                 "sha256:c357b3f628cf53ae2c4c05627ecc484553142ca23264e593d327bcde5e9c3407",
                 "sha256:ea8b7f6188e6fa117537c3df7da9fc686d485087abf6ac197f9c46432f7e4a3c"
             ],
             "version": "==2.8"
+        },
+        "itsdangerous": {
+            "hashes": [
+                "sha256:321b033d07f2a4136d3ec762eac9f16a10ccd60f53c0c91af90217ace7ba1f19",
+                "sha256:b12271b2047cb23eeb98c8b5622e2e5c5e9abd9784a153e9d8ef9cb4dd09d749"
+            ],
+            "version": "==1.1.0"
         },
         "jdcal": {
             "hashes": [
@@ -205,7 +226,7 @@
         "nerium": {
             "editable": true,
             "git": "https://github.com/tym-xqo/nerium",
-            "ref": "e2eb2897f06b45fa3de55c4117701115f43f7b6e"
+            "ref": "0fcdcc48b41ce357a6e848af92994bf43e2617ae"
         },
         "odfpy": {
             "hashes": [
@@ -336,6 +357,13 @@
                 "sha256:dbe59173209418ae49d485b87d1681aefa36252ee85884c31346debd19463232"
             ],
             "version": "==1.25.3"
+        },
+        "werkzeug": {
+            "hashes": [
+                "sha256:87ae4e5b5366da2347eb3116c0e6c681a0e939a33b2805e2c0cbd282664932c4",
+                "sha256:a13b74dd3c45f758d4ebdb224be8f1ab8ef58b3c0ffc1783a8c7d9f4f50227e6"
+            ],
+            "version": "==0.15.5"
         },
         "xlrd": {
             "hashes": [

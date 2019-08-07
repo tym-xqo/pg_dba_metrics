@@ -16,34 +16,6 @@ if os.getenv("METRIC_ENV", "development") == "development":
 load_dotenv(find_dotenv(), override=override)
 
 HOSTNAME = os.getenv("HOSTNAME", "localhost")
-stopfile = Path("/tmp/dba-alert-pause")
-
-
-def send_alert(metric):
-    """Post a message to Slack when a metric check fails or clears.
-    """
-    name = metric.name
-    check = metric.metadata["threshold"]["field"]
-    threshold = metric.metadata["threshold"]["gate"]
-    status = metric.metadata["status"]
-    value = metric.value
-
-    format = get_format("print")
-    full_metric = yaml.safe_dump(format.dump(metric).data)
-
-    title = f"{HOSTNAME} {status}"
-
-    message = (
-        f"Metric *{name}* {check} is {value}\nThreshold is {threshold}\n"
-        f"```{full_metric}```"
-    )
-
-    color = "good"
-    if status == "failure":
-        color = "danger"
-
-    alert = slack_post(title=title, message=message, color=color)
-    return alert
 
 
 def swap_status(status):
@@ -69,14 +41,44 @@ def update_config(metric):
         config_file.write(new_content)
 
 
+def send_alert(metric):
+    """Post a message to Slack when a metric check fails or clears.
+    """
+    name = metric.name
+    check = metric.metadata["threshold"]["field"]
+    threshold = metric.metadata["threshold"]["gate"]
+    status = metric.metadata["status"]
+    value = metric.value
+    alert = None
+
+    format = get_format("print")
+    full_metric = yaml.safe_dump(format.dump(metric).data)
+
+    title = f"{HOSTNAME} {status}"
+
+    message = (
+        f"Metric *{name}* {check} is {value}\nThreshold is {threshold}\n"
+        f"```{full_metric}```"
+    )
+
+    color = "good"
+    if status == "failure":
+        color = "danger"
+
+    stopfile = Path("/tmp/dba-alert-pause")
+    if not stopfile.exists() and status != "pause":
+        alert = slack_post(title=title, message=message, color=color)
+        update_config(metric)
+
+    metric.alert = alert
+    return metric
+
+
 def check_metric(metric):
     """Compare metric check value against threshold;
     Update status and send alert if comparsison triggers status change
     """
     # TODO: Support failure modes other than `> threshold`
-    alert = None
-    if stopfile.exists():
-        return alert
 
     try:
         data = metric.result
@@ -84,23 +86,23 @@ def check_metric(metric):
         check = metric.metadata["threshold"]["field"]
         threshold = metric.metadata["threshold"]["gate"]
     except (KeyError, AttributeError):
-        return alert
-
-    if status == "pause":
-        return alert
+        return metric
 
     if data:
         value = max([row[check] for row in data])
         metric.value = value
+
         test = value >= threshold
         if status == "failure":
             test = value < threshold
+
         if test:
             metric.metadata["status"] = swap_status(status)
-            alert = send_alert(metric)
-            update_config(metric)
+            metric = send_alert(metric)
 
-    return alert
+    metric.status = metric.metadata["status"]
+    metric.threshold = metric.metadata["threshold"]
+    return metric
 
 
 if __name__ == "__main__":

@@ -8,7 +8,7 @@ verify_ssl = true
 [packages]
 apscheduler = "*"
 dba-metrics = {editable = true,path = "."}
-nerium = {editable = true,git = "https://github.com/tym-xqo/nerium",ref = "e2eb289"}
-# nerium = {editable = true, path = "../nerium"}
+nerium = {editable = true,git = "https://github.com/tym-xqo/nerium"}
+# nerium = {editable = true,path = "../nerium"}
 pg8000 = "*"
 slackclient = "*"
