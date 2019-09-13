@@ -66,7 +66,7 @@ def send_alert(metric):
         color = "danger"
 
     stopfile = Path("/tmp/dba-alert-pause")
-    if not stopfile.exists() and status != "pause":
+    if not (stopfile.exists() or status == "pause"):
         alert = slack_post(title=title, message=message, color=color)
         update_config(metric)
 
