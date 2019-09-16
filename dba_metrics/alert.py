@@ -67,9 +67,8 @@ def send_alert(metric):
 
     stopfile = Path("/tmp/dba-alert-pause")
     if not stopfile.exists():
-        if status != "pause":
-            alert = slack_post(title=title, message=message, color=color)
-            update_config(metric)
+        alert = slack_post(title=title, message=message, color=color)
+        update_config(metric)
 
     metric.alert = alert
     return metric
@@ -97,7 +96,7 @@ def check_metric(metric):
         if status == "failure":
             test = value < threshold
 
-        if test:
+        if test and status != "pause":
             metric.metadata["status"] = swap_status(status)
             metric = send_alert(metric)
 

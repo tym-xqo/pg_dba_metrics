@@ -1,5 +1,5 @@
 ---
-status: clear
+status: pause
 threshold:
   field: check_it
   gate: 10
