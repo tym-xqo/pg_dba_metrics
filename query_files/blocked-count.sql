@@ -1,8 +1,8 @@
 ---
-status: clear
+status: pause
 threshold:
   field: blocked_locks
-  gate: 1
+  gate: 5
 ---
 SELECT count(DISTINCT pid) AS blocked_locks
   FROM pg_locks

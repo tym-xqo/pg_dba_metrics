@@ -2,7 +2,7 @@
 status: pause
 threshold:
   field: avg_duration
-  gate: 7
+  gate: 30
 ---
 WITH h AS (
         SELECT extract(epoch FROM age(clock_timestamp(), query_start)) AS duration

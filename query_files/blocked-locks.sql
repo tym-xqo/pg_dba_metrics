@@ -2,7 +2,7 @@
 status: clear
 threshold:
   field: duration
-  gate: 10
+  gate: 300
 ---
 WITH p AS (
        SELECT DISTINCT pid 

@@ -1,5 +1,5 @@
 ---
-status: clear
+status: pause
 threshold:
   field: lock_count
   gate: 1000

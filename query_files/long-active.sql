@@ -2,7 +2,7 @@
 status: clear
 threshold:
   field: duration
-  gate: 120 
+  gate: 300
 ---
 WITH d AS (
 SELECT extract(epoch FROM age(clock_timestamp(), query_start)) AS duration
