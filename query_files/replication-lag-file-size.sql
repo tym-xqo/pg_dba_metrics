@@ -2,7 +2,7 @@
 status: clear
 threshold:
   field: restart_lag
-  gate: 33554432
+  gate: 100663296
 ---
 with lag as (
 SELECT
