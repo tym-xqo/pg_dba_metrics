@@ -79,6 +79,8 @@ def check_metric(metric):
     Update status and send alert if comparsison triggers status change
     """
     # TODO: Support failure modes other than `> threshold`
+    # TODO: Refactor: Does this do too much?
+    # Clarify what this does relative to get_metric method
 
     try:
         data = metric.result

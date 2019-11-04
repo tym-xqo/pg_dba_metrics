@@ -33,6 +33,9 @@ store_db = records.Database(
 def get_metric(name, quiet=False):
     metric = get_result_set(name)
     metric.executed += "Z"
+    # TODO: check_metric here smells like a side-effect,
+    # and a bad time for it at that. Should be able to get metric without firing alerts
+    # Refactor to a seperate explicit call
     metric = check_metric(metric)
     return metric
 
