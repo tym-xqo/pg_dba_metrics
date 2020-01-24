@@ -52,7 +52,7 @@ def send_alert(metric):
     alert = None
 
     format = get_format("print")
-    full_metric = yaml.safe_dump(format.dump(metric).data)
+    full_metric = yaml.safe_dump(format.dump(metric))
 
     title = f"{HOSTNAME} {status}"
 
