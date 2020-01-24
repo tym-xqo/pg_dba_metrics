@@ -34,7 +34,7 @@ def update_config(metric):
     sql = metric.body
     metadata = metric.metadata
     metadata_yaml = yaml.safe_dump(metadata)
-    metadata_block = f"---\n{metadata_yaml}---"
+    metadata_block = f"/* :meta\n---\n{metadata_yaml}--- */"
     query_file = os.path.join("query_files", f"{metric.name}.sql")
     with open(query_file, "w") as config_file:
         new_content = "\n".join([metadata_block, sql, ""])

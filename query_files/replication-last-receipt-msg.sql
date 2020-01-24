@@ -1,9 +1,11 @@
+/* :meta
 ---
 status: clear
 threshold:
   field: duration
   gate: 300
 ---
+*/
 with submsg as (
 SELECT 
 subname as subscription_name,

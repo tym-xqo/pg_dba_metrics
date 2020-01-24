@@ -1,9 +1,11 @@
+/* :meta
 ---
 status: clear
 threshold:
   field: duration
   gate: 300
 ---
+*/
 WITH p AS (
        SELECT DISTINCT pid 
          FROM pg_locks 

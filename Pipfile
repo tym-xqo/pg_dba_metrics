@@ -4,11 +4,7 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
+coverage = "*"
 
 [packages]
-apscheduler = "*"
 dba-metrics = {editable = true,path = "."}
-nerium = {editable = true,git = "https://github.com/tym-xqo/nerium"}
-# nerium = {editable = true,path = "../nerium"}
-pg8000 = "*"
-slackclient = "*"

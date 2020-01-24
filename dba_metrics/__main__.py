@@ -4,15 +4,17 @@
 import argparse
 import json
 import os
-import yaml
 from pathlib import Path
+from types import SimpleNamespace
 
 import records
+import yaml
 from apscheduler.schedulers.blocking import BlockingScheduler
-from dba_metrics.alert import check_metric
 from dotenv import find_dotenv, load_dotenv
 from nerium.formatter import get_format
 from nerium.query import get_result_set
+
+from dba_metrics.alert import check_metric
 
 override = False
 if os.getenv("METRIC_ENV", "development") == "development":
@@ -31,7 +33,8 @@ store_db = records.Database(
 
 
 def get_metric(name, quiet=False):
-    metric = get_result_set(name)
+    metric = get_result_set(name)._asdict()
+    metric = SimpleNamespace(**metric)
     metric.executed += "Z"
     # TODO: check_metric here smells like a side-effect,
     # and a bad time for it at that. Should be able to get metric without firing alerts
@@ -43,7 +46,7 @@ def get_metric(name, quiet=False):
 def print_metric(name):
     metric = get_metric(name)
     format = get_format("print")
-    formatted = yaml.safe_dump(format.dump(metric).data)
+    formatted = yaml.safe_dump(format.dump(metric))  # ["data"])
     return formatted
 
 

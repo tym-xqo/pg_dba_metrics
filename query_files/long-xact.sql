@@ -1,9 +1,11 @@
+/* :meta
 ---
 status: clear
 threshold:
   field: duration
   gate: 720
 ---
+*/
 WITH i AS (
 SELECT pid
      , usename
