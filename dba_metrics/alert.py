@@ -16,6 +16,7 @@ if os.getenv("METRIC_ENV", "development") == "development":
 load_dotenv(find_dotenv(), override=override)
 
 HOSTNAME = os.getenv("HOSTNAME", "localhost")
+QUERY_PATH = os.getenv("QUERY_PATH", "query_files")
 
 
 def swap_status(status):
@@ -35,20 +36,19 @@ def update_config(metric):
     metadata = metric.metadata
     metadata_yaml = yaml.safe_dump(metadata)
     metadata_block = f"/* :meta\n---\n{metadata_yaml}--- */"
-    query_file = os.path.join("query_files", f"{metric.name}.sql")
+    query_file = os.path.join(QUERY_PATH, f"{metric.name}.sql")
     with open(query_file, "w") as config_file:
         new_content = "\n".join([metadata_block, sql, ""])
         config_file.write(new_content)
 
 
-def send_alert(metric):
+def send_alert(metric, value):
     """Post a message to Slack when a metric check fails or clears.
     """
     name = metric.name
     check = metric.metadata["threshold"]["field"]
     threshold = metric.metadata["threshold"]["gate"]
     status = metric.metadata["status"]
-    value = metric.value
     alert = None
 
     format = get_format("print")
@@ -70,7 +70,6 @@ def send_alert(metric):
         alert = slack_post(title=title, message=message, color=color)
         update_config(metric)
 
-    metric.alert = alert
     return metric
 
 
@@ -92,18 +91,17 @@ def check_metric(metric):
 
     if data:
         value = max([row[check] for row in data])
-        metric.value = value
 
         test = value >= threshold
         if status == "failure":
             test = value < threshold
 
         if test and status != "pause":
-            metric.metadata["status"] = swap_status(status)
-            metric = send_alert(metric)
+            metadata = metric.metadata
+            metadata["status"] = swap_status(status)
+            metric = metric._replace(metadata=metadata)
+            metric = send_alert(metric, value)
 
-    metric.status = metric.metadata["status"]
-    metric.threshold = metric.metadata["threshold"]
     return metric
 
 
