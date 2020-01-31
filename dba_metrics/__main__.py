@@ -33,9 +33,9 @@ store_db = records.Database(
 
 
 def get_metric(name, quiet=False):
-    metric = get_result_set(name)._asdict()
-    metric = SimpleNamespace(**metric)
-    metric.executed += "Z"
+    metric = get_result_set(name)
+    executed = metric.executed + "Z"
+    metric = metric._replace(executed=executed)
     # TODO: check_metric here smells like a side-effect,
     # and a bad time for it at that. Should be able to get metric without firing alerts
     # Refactor to a seperate explicit call
@@ -76,9 +76,9 @@ def store_metric(name):
     for i in metric.result:
         stamp = metric.executed
         payload = json.dumps(i, default=str)
-        status = metric.status
-        threshold_field = metric.threshold["field"]
-        threshold_gate = str(metric.threshold["gate"])
+        status = metric.metadata["status"]
+        threshold_field = metric.metadata["threshold"]["field"]
+        threshold_gate = str(metric.metadata["threshold"]["gate"])
         print(stamp, payload, status, threshold_field, threshold_gate)
         insert = store_db.query(
             sql,
