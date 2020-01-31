@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*--
 import os
 
+# TODO: check for newer slack library, or just use requests
 import slack
 from dotenv import find_dotenv, load_dotenv
 
