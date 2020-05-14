@@ -3,9 +3,8 @@
 status: clear
 threshold:
   field: duration
-  gate: 300
----
-*/
+  gate: 1800
+--- */
 WITH d AS (
 SELECT extract(epoch FROM age(clock_timestamp(), query_start)) AS duration
      , pid
@@ -19,7 +18,7 @@ SELECT extract(epoch FROM age(clock_timestamp(), query_start)) AS duration
    AND application_name != 'pg_dba_metrics'
  ORDER BY 1 DESC
  LIMIT 1)
-SELECT * 
+SELECT *
   FROM d
  UNION
 SELECT 0, -1, NULL, NULL, 'idle', ''

@@ -4,11 +4,10 @@ status: clear
 threshold:
   field: duration
   gate: 300
----
-*/
+--- */
 WITH p AS (
-       SELECT DISTINCT pid 
-         FROM pg_locks 
+       SELECT DISTINCT pid
+         FROM pg_locks
         WHERE NOT granted)
 SELECT pid
      , pg_blocking_pids(pid)
@@ -22,5 +21,5 @@ SELECT pid
  USING (pid)
  UNION
 SELECT -1, NULL, NULL, True, 0
- WHERE NOT EXISTS (SELECT * 
+ WHERE NOT EXISTS (SELECT *
                      FROM p)

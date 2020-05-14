@@ -4,8 +4,7 @@ status: clear
 threshold:
   field: duration
   gate: 3600
----
-*/
+--- */
 WITH c AS (
 SELECT extract(epoch FROM age(clock_timestamp(), query_start)) AS duration
      , pid
