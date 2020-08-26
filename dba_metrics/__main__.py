@@ -150,6 +150,7 @@ def main():
 
     output_function = print_metric
     if args.store:
+        # TODO: create_table only once
         create_table()
         output_function = store_metric
 
