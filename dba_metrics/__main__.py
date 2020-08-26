@@ -5,7 +5,6 @@ import argparse
 import json
 import os
 from pathlib import Path
-from types import SimpleNamespace
 
 import records
 import yaml
