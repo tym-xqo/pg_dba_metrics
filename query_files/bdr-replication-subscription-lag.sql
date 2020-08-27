@@ -2,8 +2,8 @@
 ---
 status: clear
 threshold:
-  field: replication_replay_lag
-  gate: 30
+  field: time_lag
+  gate: 300
 ---
 */ 
 select node_group_name 
