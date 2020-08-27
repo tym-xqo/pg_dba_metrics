@@ -5,7 +5,8 @@ threshold:
   field: blocked_locks
   gate: 5
 ---
-*/
-SELECT count(DISTINCT pid) AS blocked_locks
-  FROM pg_locks
- WHERE NOT GRANTED
+*/ 
+select count(distinct pid) as blocked_locks
+  from pg_locks
+ where not granted
+;

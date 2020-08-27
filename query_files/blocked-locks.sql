@@ -4,22 +4,28 @@ status: clear
 threshold:
   field: duration
   gate: 300
---- */
-WITH p AS (
-       SELECT DISTINCT pid
-         FROM pg_locks
-        WHERE NOT granted)
-SELECT pid
-     , pg_blocking_pids(pid)
-     , mode
-     , granted
-     , extract(epoch FROM age(clock_timestamp(), query_start)) AS duration
-  FROM p
-  JOIN pg_locks
- USING (pid)
-  JOIN pg_stat_activity a
- USING (pid)
- UNION
-SELECT -1, NULL, NULL, True, 0
- WHERE NOT EXISTS (SELECT *
-                     FROM p)
+--- */ 
+with p as (
+        select distinct pid
+          from pg_locks
+         where not granted
+       ) 
+select pid 
+     , pg_blocking_pids(pid) 
+     , mode 
+     , granted 
+     , extract(epoch from age(clock_timestamp(), query_start)) as duration
+  from p
+  join pg_locks using (pid)
+  join pg_stat_activity a using (pid)
+ union 
+ select -1
+     , null
+     , null
+     , true
+     , 0
+ where not exists (
+        select *
+          from p
+       )
+;

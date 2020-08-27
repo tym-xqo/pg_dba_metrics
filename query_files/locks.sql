@@ -5,10 +5,11 @@ threshold:
   field: lock_count
   gate: 1000
 ---
-*/
-SELECT count(*) AS lock_count
-     , mode
+*/ 
+select count(*) as lock_count 
+     , mode 
      , granted
-  FROM pg_locks
- GROUP BY 2,
-          3;
+  from pg_locks
+ group by 2
+        , 3
+;

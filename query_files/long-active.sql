@@ -4,24 +4,32 @@ status: clear
 threshold:
   field: duration
   gate: 1800
---- */
-WITH d AS (
-SELECT extract(epoch FROM age(clock_timestamp(), query_start)) AS duration
-     , pid
-     , usename
-     , application_name
-     , state
-     , left(query, 80) AS query
-  FROM pg_stat_activity
- WHERE backend_type = 'client backend'
-   AND state != 'idle'
-   AND application_name != 'pg_dba_metrics'
- ORDER BY 1 DESC
- LIMIT 1)
-SELECT *
-  FROM d
- UNION
-SELECT 0, -1, NULL, NULL, 'idle', ''
- WHERE NOT EXISTS (SELECT *
-                     FROM d)
+--- */ 
+with d as (
+        select extract(epoch from age(clock_timestamp(), query_start)) as duration 
+             , pid 
+             , usename 
+             , application_name 
+             , state 
+             , left(query, 80) as query
+          from pg_stat_activity
+         where backend_type = 'client backend'
+           and state != 'idle'
+           and application_name != 'pg_dba_metrics'
+         order by 1 desc
+         limit 1
+       ) 
+select *
+  from d
+ union 
+select 0
+     , -1
+     , null
+     , null
+     , 'idle'
+     , ''
+ where not exists (
+        select *
+          from d
+       ) 
 ;

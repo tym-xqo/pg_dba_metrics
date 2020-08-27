@@ -4,21 +4,30 @@ status: clear
 threshold:
   field: duration
   gate: 3600
---- */
-WITH w AS(
-SELECT extract(epoch FROM max(age(clock_timestamp(), query_start))) AS duration,
-       wait_event_type,
-       pid
-  FROM pg_stat_activity
- WHERE backend_type = 'client backend'
-   AND wait_event_type IS NOT NULL
-   AND query_start IS NOT NULL
-   AND state != 'idle'
-   AND application_name != 'pg_dba_metrics'
- GROUP BY 2, 3
- ORDER BY 1 DESC
- LIMIT 1)
-SELECT * from w
- UNION
-SELECT 0, 'none', -1
- WHERE NOT EXISTS (SELECT * FROM w)
+--- */ 
+with w AS(
+        select extract(epoch from max(age(clock_timestamp(), query_start))) as duration
+             , wait_event_type
+             , pid
+          from pg_stat_activity
+         where backend_type = 'client backend'
+           and wait_event_type is not null
+           and query_start is not null
+           and state != 'idle'
+           and application_name != 'pg_dba_metrics'
+         group by 2
+                , 3
+         order by 1 desc
+         limit 1
+       ) 
+select *
+  from w
+ union 
+select 0
+     , 'none'
+     , -1
+ where not exists (
+        select *
+          from w
+       )
+;

@@ -4,18 +4,27 @@ status: clear
 threshold:
   field: duration
   gate: 720
---- */
-WITH i AS (
-SELECT pid
-     , usename
-     , left(query, 80) AS query
-     , extract(epoch FROM age(clock_timestamp(), xact_start)) AS duration
- FROM pg_stat_activity
-WHERE backend_type = 'client backend'
-  AND state = 'idle in transaction'
-ORDER BY 4 desc
-LIMIT 1)
-SELECT * FROM i
-UNION
-SELECT 0, 'no user', 'no query', 0
- WHERE NOT EXISTS (SELECT * FROM i)
+--- */ 
+with i as (
+        select pid 
+             , usename 
+             , left(query, 80) as query 
+             , extract(epoch from age(clock_timestamp(), xact_start)) as duration
+          from pg_stat_activity
+         where backend_type = 'client backend'
+           and state = 'idle in transaction'
+         order by 4 desc
+         limit 1
+       ) 
+select *
+  from i
+ union 
+select 0
+     , 'no user'
+     , 'no query'
+     , 0
+ where not exists (
+        select *
+          from i
+       )
+;
