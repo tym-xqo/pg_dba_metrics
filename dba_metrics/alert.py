@@ -65,10 +65,9 @@ def send_alert(metric, value):
     if status == "failure":
         color = "danger"
 
-    stopfile = Path("/tmp/dba-alert-pause")
-    if not stopfile.exists():
-        alert = slack_post(title=title, message=message, color=color)
-        update_config(metric)
+    alert = slack_post(title=title, message=message, color=color)
+    print(alert)
+    update_config(metric)
 
     return metric
 
@@ -78,9 +77,6 @@ def check_metric(metric):
     Update status and send alert if comparsison triggers status change
     """
     # TODO: Support failure modes other than `> threshold`
-    # TODO: Refactor: Does this do too much?
-    # Clarify what this does relative to get_metric method
-
     try:
         data = metric.result
         status = metric.metadata["status"]
@@ -96,7 +92,7 @@ def check_metric(metric):
         if status == "failure":
             test = value < threshold
 
-        if test and status != "pause":
+        if test:
             metadata = metric.metadata
             metadata["status"] = swap_status(status)
             metric = metric._replace(metadata=metadata)

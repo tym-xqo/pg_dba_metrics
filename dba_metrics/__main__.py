@@ -5,7 +5,6 @@ import argparse
 import json
 import os
 from pathlib import Path
-from types import SimpleNamespace
 
 import records
 import yaml
@@ -36,22 +35,16 @@ def get_metric(name, quiet=False):
     metric = get_result_set(name)
     executed = metric.executed + "Z"
     metric = metric._replace(executed=executed)
-    # TODO: check_metric here smells like a side-effect,
-    # and a bad time for it at that. Should be able to get metric without firing alerts
-    # Refactor to a seperate explicit call
-    metric = check_metric(metric)
     return metric
 
 
-def print_metric(name):
-    metric = get_metric(name)
+def print_metric(metric):
     format = get_format("print")
     formatted = yaml.safe_dump(format.dump(metric))  # ["data"])
     return formatted
 
 
-def store_metric(name):
-    metric = get_metric(name)
+def store_metric(metric):
     # fmt: off
     sql = (
         "INSERT into perf_metric ("
@@ -84,7 +77,7 @@ def store_metric(name):
             sql,
             stamp=stamp,
             payload=payload,
-            name=name,
+            name=metric.name,
             host=HOSTNAME,
             status=status,
             threshold_field=threshold_field,
@@ -105,9 +98,14 @@ def output_all(output_function, name="all"):
     else:
         metrics = [name]
     for name in metrics:
-        output = output_function(name)
+        metric = get_metric(name)
+
+        stopfile = Path("/tmp/dba-alert-pause")
+        if not stopfile.exists() and metric.metadata["status"] != "pause":
+            check_metric(metric)
+
+        output = output_function(metric)
         print(output)
-        # yield output
 
 
 def schedule(output_function, name="all"):
@@ -142,18 +140,34 @@ def create_table():
 
 
 def main():
+    """Get arguments and invoke metric handlers to match options
+
+      Usage:
+
+      name - A specific query name to check or "all" to loop over entire
+      query_files directory. Defaults to "all" 
+      --store - If true, store the check results in database table. Defaults to
+      "false", with results written to stdout
+      --schedule - Invokes Blocking Scheduler to repeat checks. Default false, run
+      output one time and exit
+    """
     parser = argparse.ArgumentParser()
     parser.add_argument("name", nargs="?", default="all")
     parser.add_argument("-s", "--store", action="store_true", default=False)
     parser.add_argument("-S", "--schedule", action="store_true", default=False)
     args = parser.parse_args()
 
+    # Default behavior is just to print metric result to stdout
     output_function = print_metric
+
     if args.store:
+        # Write metric result to database table if `--store`
         # TODO: create_table only once
         create_table()
         output_function = store_metric
 
+    # Invoke the scheduler if that arg is True,
+    # otherwise just hand to outputter
     if args.schedule:
         schedule(output_function, args.name)
     else:
