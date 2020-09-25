@@ -14,6 +14,7 @@ from nerium.formatter import get_format
 from nerium.query import get_result_set
 
 from dba_metrics.alert import check_metric
+from dba_metrics.nri import nri_output
 
 override = False
 if os.getenv("METRIC_ENV", "development") == "development":
@@ -153,9 +154,15 @@ def main():
     """
     parser = argparse.ArgumentParser()
     parser.add_argument("name", nargs="?", default="all")
+    parser.add_argument("-i", "--integration", action="store_true", default=False)
     parser.add_argument("-s", "--store", action="store_true", default=False)
     parser.add_argument("-S", "--schedule", action="store_true", default=False)
     args = parser.parse_args()
+
+    if args.integration:
+        output = nri_output()
+        print(output)
+        return output
 
     # Default behavior is just to print metric result to stdout
     output_function = print_metric
