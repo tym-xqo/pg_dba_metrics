@@ -9,4 +9,5 @@ def nri_output():
 
 
 if __name__ == "__main__":
-    nri_output()
+    output = nri_output()
+    print(output)
