@@ -7,14 +7,14 @@ load_dotenv(find_dotenv(), override=True)
 
 JSON_HEADER = """
 {
-  "name": "com.benchprep.test-integration",
+  "name": "com.benchprep.custompg",
   "protocol_version": "3",
   "integration_version": "0.0.1",
   "data": [
     {
       "entity": {
-        "name": "postgres-custom",
-        "type": "database-metric",
+        "name": "customPostgres",
+        "type": "db",
         "id_attributes": [
           {
             "key": "environment",
@@ -33,24 +33,24 @@ JSON_HEADER = """
 
 JSON_BLOCK = """
 {
-  "name": "com.benchprep.test-integration",
+  "name": "com.benchprep.custompg",
   "protocol_version": "3",
   "integration_version": "0.0.1",
   "data": [{
     "entity": {
-      "name": "postgres-custom",
-      "type": "database-metric",
+      "name": "customPostgres",
+      "type": "db",
       "id_attributes": [{
         "key": "environment",
         "value": "development"
       }]
     },
     "metrics": [{
-      "displayName": "postgres-custom",
-      "entityName": "database-metric:postgres-custom",
+      "displayName": "customPostgres",
+      "entityName": "db:customPostgres",
       "event_type": "BenchPrepTestEvent",
-      "bppg.avg-active.avg_duration": 0.001298,
-      "bppg.locks.lock_count": 1
+      "bppg.avgActive.avgDuration": 0.001298,
+      "bppg.locks.lockCount": 1
     }],
     "inventory": {},
     "events": [],
@@ -67,8 +67,8 @@ def setup_header():
 
 def sample_metrics():
     metrics = dict(
-        displayName="test_entity",
-        entityName="meaningless_number:test_entity",
+        displayName="customPostgres",
+        entityName="db:customPostgres",
         event_type="BenchPrepTestEvent",
     )
     for metric in all_metrics():
