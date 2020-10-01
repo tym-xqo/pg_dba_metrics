@@ -2,9 +2,7 @@ import json
 
 import inflection
 from dba_metrics.__main__ import all_metrics, get_metric
-from dotenv import find_dotenv, load_dotenv
 
-load_dotenv(find_dotenv(), override=True)
 
 JSON_HEADER = """
 {
