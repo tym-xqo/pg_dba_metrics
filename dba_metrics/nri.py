@@ -1,5 +1,6 @@
 import json
 
+import inflection
 from dba_metrics.__main__ import all_metrics, get_metric
 from dotenv import find_dotenv, load_dotenv
 
@@ -31,34 +32,6 @@ JSON_HEADER = """
 }
 """
 
-JSON_BLOCK = """
-{
-  "name": "com.benchprep.custompg",
-  "protocol_version": "3",
-  "integration_version": "0.0.1",
-  "data": [{
-    "entity": {
-      "name": "customPostgres",
-      "type": "db",
-      "id_attributes": [{
-        "key": "environment",
-        "value": "development"
-      }]
-    },
-    "metrics": [{
-      "displayName": "customPostgres",
-      "entityName": "db:customPostgres",
-      "event_type": "BenchPrepTestEvent",
-      "bppg.avgActive.avgDuration": 0.001298,
-      "bppg.locks.lockCount": 1
-    }],
-    "inventory": {},
-    "events": [],
-    "add_hostname": true
-  }]
-}
-"""
-
 
 def setup_header():
     payload = json.loads(JSON_HEADER)
@@ -78,20 +51,21 @@ def sample_metrics():
         data = metric.result
         check = metric.metadata["threshold"]["field"]
         value = max([row[check] for row in data])
-        metric_key = ".".join(["bppg", metric.name, check])
+        check = inflection.camelize(check.replace("-", "_"))
+        check = check[0].lower() + check[1:]
+        name = inflection.camelize(metric.name.replace("-", "_"))
+        name = name[0].lower() + name[1:]
+        metric_key = ".".join(["pg", name, check])
         metrics[metric_key] = value
     metrics = [metrics]
     return metrics
 
 
 def main():
-    # header = setup_header()
-    # metrics = sample_metrics()
-    # header["data"][0]["metrics"] = metrics
-    # payload = json.dumps(header)
-    # print(payload)
-    block = json.loads(JSON_BLOCK)
-    payload = json.dumps(block)
+    header = setup_header()
+    metrics = sample_metrics()
+    header["data"][0]["metrics"] = metrics
+    payload = json.dumps(header)
     print(payload)
 
 
