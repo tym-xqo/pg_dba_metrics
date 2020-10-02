@@ -42,7 +42,7 @@ def get_metric(name):
 
 def print_metric(metric):
     format = get_format("print")
-    formatted = yaml.safe_dump(format.dump(metric))  # ["data"])
+    formatted = yaml.dump(format.dump(metric))  # ["data"])
     return formatted
 
 

@@ -4,7 +4,7 @@ status: clear
 threshold:
   field: duration
   gate: 3600
---- */ 
+--- */
 with w AS(
         select extract(epoch from max(age(clock_timestamp(), query_start))) as duration
              , wait_event_type
@@ -19,10 +19,10 @@ with w AS(
                 , 3
          order by 1 desc
          limit 1
-       ) 
+       )
 select *
   from w
- union 
+ union
 select 0
      , 'none'
      , -1

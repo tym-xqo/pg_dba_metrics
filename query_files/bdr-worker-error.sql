@@ -3,9 +3,8 @@
 status: clear
 threshold:
   field: error_count
-  gate: 0
----
-*/ 
+  gate: 1
+--- */
 with e as (
 select (select count(*) from bdr.worker_errors) as error_count
      , worker_pid
