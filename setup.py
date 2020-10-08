@@ -16,7 +16,12 @@ setup(
         "records",
         "slackclient",
     ],
-    entry_points={"console_scripts": ["dbamtx = dba_metrics.__main__:main"]},
+    entry_points={
+        "console_scripts": [
+            "dbamtx = dba_metrics.__main__:main",
+            "nri = dba_metrics.nri:main",
+        ]
+    },
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Environment :: Console",

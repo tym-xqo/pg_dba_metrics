@@ -9,7 +9,6 @@ from pathlib import Path
 import records
 import yaml
 from apscheduler.schedulers.blocking import BlockingScheduler
-from dotenv import find_dotenv, load_dotenv
 from nerium.formatter import get_format
 from nerium.query import get_result_set
 
@@ -17,11 +16,6 @@ from dba_metrics.alert import check_metric
 
 # from dba_metrics.nri import nri_output
 
-override = False
-if os.getenv("METRIC_ENV", "development") == "development":
-    override = True
-
-load_dotenv(find_dotenv(), override=override)
 
 HOSTNAME = os.getenv("HOSTNAME", "localhost")
 INTERVAL = int(os.getenv("INTERVAL", 60))
@@ -111,8 +105,7 @@ def output_all(output_function, name="all"):
 
 
 def schedule(output_function, name="all"):
-    """Schedule get_metrics job in APScheduler, set to run at configured $INTERVAL
-    """
+    """Schedule get_metrics job in APScheduler, set to run at configured $INTERVAL"""
     scheduler = BlockingScheduler(timezone="UTC")
     scheduler.add_job(output_all, "interval", [output_function, name], seconds=INTERVAL)
     print("Press Ctrl+C to exit")
@@ -125,8 +118,7 @@ def schedule(output_function, name="all"):
 
 
 def create_table():
-    """Create table for storing metrics in target database if not present
-    """
+    """Create table for storing metrics in target database if not present"""
     sql = (
         "create table if not exists perf_metric( "
         "metric_id bigserial primary key, "
@@ -144,14 +136,14 @@ def create_table():
 def main():
     """Get arguments and invoke metric handlers to match options
 
-      Usage:
+    Usage:
 
-      name - A specific query name to check or "all" to loop over entire
-      query_files directory. Defaults to "all" 
-      --store - If true, store the check results in database table. Defaults to
-      "false", with results written to stdout
-      --schedule - Invokes Blocking Scheduler to repeat checks. Default false, run
-      output one time and exit
+    name - A specific query name to check or "all" to loop over entire
+    query_files directory. Defaults to "all"
+    --store - If true, store the check results in database table. Defaults to
+    "false", with results written to stdout
+    --schedule - Invokes Blocking Scheduler to repeat checks. Default false, run
+    output one time and exit
     """
     parser = argparse.ArgumentParser()
     parser.add_argument("name", nargs="?", default="all")

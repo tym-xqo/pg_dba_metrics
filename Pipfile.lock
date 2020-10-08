@@ -235,11 +235,11 @@
         },
         "nerium": {
             "hashes": [
-                "sha256:836ddd24575e724051317845f97a6bdd830b003b86f88d3cfc9fadebd15b1ed4",
-                "sha256:892a300f8c20f1b1cf9a707559cd7efc3b6feac9bef511fbc4baedb4c3f0ae44"
+                "sha256:d900f0a5016f593d9bfc192a0a77927502437174edc43e23ab66fd2aa10a5f2b",
+                "sha256:e6a194f9cf5bff0f71f66f0618f0ef3e9d07bd08a73e4578181062810998c4db"
             ],
             "markers": "python_full_version >= '3.6.0'",
-            "version": "==0.7.5"
+            "version": "==0.7.6"
         },
         "openpyxl": {
             "hashes": [
@@ -254,13 +254,6 @@
             ],
             "markers": "python_version >= '3.5'",
             "version": "==1.16.5"
-        },
-        "python-dotenv": {
-            "hashes": [
-                "sha256:8c10c99a1b25d9a68058a1ad6f90381a62ba68230ca93966882a4dbc3bc9c33d",
-                "sha256:c10863aee750ad720f4f43436565e4c1698798d763b63234fb5021b6c616e423"
-            ],
-            "version": "==0.14.0"
         },
         "pytz": {
             "hashes": [
@@ -313,7 +306,7 @@
                 "sha256:30639c035cdb23534cd4aa2dd52c3bf48f06e5f4a941509c8bafd8ce11080259",
                 "sha256:8b74bedcbbbaca38ff6d7491d76f2b06b3592611af620f8426e82dddb04a5ced"
             ],
-            "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2'",
+            "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3'",
             "version": "==1.15.0"
         },
         "slackclient": {

@@ -4,23 +4,15 @@ import os
 from itertools import cycle
 
 import yaml
-from dotenv import find_dotenv, load_dotenv
 from dba_metrics.slack_post import slack_post
 from nerium.formatter import get_format
-
-override = False
-if os.getenv("METRIC_ENV", "development") == "development":
-    override = True
-
-load_dotenv(find_dotenv(), override=override)
 
 HOSTNAME = os.getenv("HOSTNAME", "localhost")
 QUERY_PATH = os.getenv("QUERY_PATH", "query_files")
 
 
 def swap_status(status):
-    """Toggle status between "clear" and "failure" on check status change
-    """
+    """Toggle status between "clear" and "failure" on check status change"""
     opts = cycle(["clear", "failure"])
     new_status = next(opts)
     if status == new_status:
@@ -29,8 +21,7 @@ def swap_status(status):
 
 
 def update_config(metric):
-    """Rewrite sql metadata with new status after change
-    """
+    """Rewrite sql metadata with new status after change"""
     sql = metric.body
     metadata = metric.metadata
     metadata_yaml = yaml.safe_dump(metadata)
@@ -42,8 +33,7 @@ def update_config(metric):
 
 
 def send_alert(metric, value):
-    """Post a message to Slack when a metric check fails or clears.
-    """
+    """Post a message to Slack when a metric check fails or clears."""
     name = metric.name
     check = metric.metadata["threshold"]["field"]
     threshold = metric.metadata["threshold"]["gate"]
