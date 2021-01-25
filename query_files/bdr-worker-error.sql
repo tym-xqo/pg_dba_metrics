@@ -10,7 +10,8 @@ select (select count(*) from bdr.worker_errors) as error_count
      , worker_pid
      , error_time
      , error_message
-  from  bdr.worker_errors)
+  from  bdr.worker_errors
+  where error_time > '2020-11-06')
 select *
   from e
  union
