@@ -1,3 +1,6 @@
 {
-    "python.pythonPath": "/Users/thomas/projects/pg_dba_metrics/.venv/bin/python3.8"
+    "python.pythonPath": "/Users/thomas/projects/pg_dba_metrics/.venv/bin/python3.8",
+    "python.linting.flake8Enabled": true,
+    "python.linting.pylintEnabled": false,
+    "python.linting.enabled": true
 }

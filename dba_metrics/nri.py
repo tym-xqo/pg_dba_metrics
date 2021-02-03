@@ -63,7 +63,7 @@ def main():
     header = setup_header()
     metrics = sample_metrics()
     header["data"][0]["metrics"] = metrics
-    payload = json.dumps(header)
+    payload = json.dumps(header, default=str)
     print(payload)
 
 
