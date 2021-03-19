@@ -1,14 +1,17 @@
 import json
+import os
+import re
+from pathlib import Path
 
 import inflection
-from dba_metrics.__main__ import all_metrics, get_metric
-
+import yaml
+from raw.db import result_from_file
 
 JSON_HEADER = """
 {
-  "name": "com.benchprep.custompg",
+  "name": "com.benchprep.custom_pg",
   "protocol_version": "3",
-  "integration_version": "0.0.1",
+  "integration_version": "0.1.0",
   "data": [
     {
       "entity": {
@@ -36,22 +39,39 @@ def setup_header():
     return payload
 
 
+def all_metrics():
+    metrics = list(Path(os.getenv("QUERY_PATH", "query_files")).glob("**/*"))
+    # metric_names = [metric.stem for metric in metrics]
+    return metrics
+
+
+def extract_metadata(path):
+    """Find frontmatter comment in query file and load yaml from it if present"""
+    with open(path) as query_file:
+        query_string = query_file.read()
+    metadata = {}
+    meta_comment = re.search(r"---[\s\S]+?---", query_string, re.MULTILINE)
+    if meta_comment:
+        meta_string = meta_comment[0].strip("---")
+        metadata = yaml.safe_load(meta_string)
+
+    return metadata
+
+
 def sample_metrics():
     metrics = dict(
         displayName="customPostgres",
         entityName="db:customPostgres",
-        event_type="BenchPrepTestEvent",
+        event_type="BenchPrepCustomPostgresEvent",
     )
     for metric in all_metrics():
-        metric = get_metric(metric)
-        if metric.error:
-            continue
-        data = metric.result
-        check = metric.metadata["threshold"]["field"]
-        value = max([row[check] for row in data])
+        result = result_from_file(metric)
+        metadata = extract_metadata(metric)
+        check = metadata["threshold"]["field"]
+        value = max([row[check] for row in result])
         check = inflection.camelize(check.replace("-", "_"))
         check = check[0].lower() + check[1:]
-        name = inflection.camelize(metric.name.replace("-", "_"))
+        name = inflection.camelize(metric.stem.replace("-", "_"))
         name = name[0].lower() + name[1:]
         metric_key = ".".join(["pg", name, check])
         metrics[metric_key] = value

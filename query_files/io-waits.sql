@@ -1,6 +1,5 @@
-/* :meta
+/* 
 ---
-status: clear
 threshold:
   field: io_wait_count
   gate: 25
