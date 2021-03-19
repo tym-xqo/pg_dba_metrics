@@ -1,6 +1,5 @@
-/* :meta
+/* 
 ---
-status: clear
 threshold:
   field: time_lag
   gate: 300

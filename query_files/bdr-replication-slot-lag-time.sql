@@ -1,6 +1,5 @@
-/* :meta
+/* 
 ---
-status: clear
 threshold:
   field: replay_lag_seconds
   gate: 300

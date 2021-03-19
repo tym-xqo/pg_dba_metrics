@@ -1,6 +1,5 @@
-/* :meta
+/* 
 ---
-status: pause
 threshold:
   field: avg_duration
   gate: 30

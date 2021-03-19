@@ -1,6 +1,5 @@
-/* :meta
+/* 
 ---
-status: clear
 threshold:
   field: db_size
   gate: 1500

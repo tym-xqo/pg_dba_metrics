@@ -1,6 +1,5 @@
-/* :meta
+/* 
 ---
-status: pause
 threshold:
   field: blocked_locks
   gate: 5

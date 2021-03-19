@@ -3,23 +3,21 @@ from setuptools import setup, find_packages
 
 setup(
     name="dba_metrics",
-    version="0.0.1a",
+    version="0.1.0",
     packages=find_packages(),
+    py_modules=["nri_metrics"],
     description="Script to run check queries on postgres",
     author="Thomas Yager-Madden",
     author_email="tym@benchprep.com",
     install_requires=[
-        "apscheduler",
         "inflection",
-        "nerium",
-        "pg8000",
-        "records",
-        "slackclient",
+        "psycopg2-binary",
+        "pyyaml",
+        "sqla-raw==1.0.0rc1",
     ],
     entry_points={
         "console_scripts": [
-            "dbamtx = dba_metrics.__main__:main",
-            "nri = dba_metrics.nri:main",
+            "nri = nri_metrics:main",
         ]
     },
     classifiers=[
@@ -30,6 +28,8 @@ setup(
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
         "Topic :: Database :: Front-Ends",
         "Topic :: Software Development :: Libraries",
         "Topic :: Utilities",

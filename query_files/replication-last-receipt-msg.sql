@@ -1,6 +1,5 @@
-/* :meta
+/* 
 ---
-status: clear
 threshold:
   field: duration
   gate: 300
