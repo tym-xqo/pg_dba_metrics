@@ -4,6 +4,7 @@ threshold:
   field: duration
   gate: 720
 --- */
+-- Check for long open transaction
 with i as (
         select pid
              , usename
