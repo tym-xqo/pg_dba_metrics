@@ -4,6 +4,7 @@ threshold:
   field: duration
   gate: 60
 --- */
+-- Check for pid in `idle in transaction` state for a long time
 with i as (
         select pid
              , usename
