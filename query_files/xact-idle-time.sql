@@ -23,7 +23,6 @@ select 0
      , 'no user'
      , 'no query'
      , 0
-     , 'none'
  where not exists (
         select *
           from i
