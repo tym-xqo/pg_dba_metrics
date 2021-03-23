@@ -1,0 +1,9 @@
+# edit this file as needed for the host,
+# and place in /etc/newrelic-infra/integrations.d/
+integrations:
+  - name: benchprep-custom-pg-integration
+    env:
+      DATABASE_URL: postgresql://postgres:secret-password@localhost:5432/wmx_rails_api_somewhere
+    working_dir: /home/deploy/src/pg_dba_metrics/
+    integration_user: deploy
+    exec: python3 /home/deploy/src/pg_dba_metrics/nri_metrics.py

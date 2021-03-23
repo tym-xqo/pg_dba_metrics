@@ -1,9 +1,0 @@
-# edit this file as needed for the host,
-# and place in /etc/newrelic-infra/integrations.d/
-integrations:
-  - name: dba-metrics-integration
-    env:
-      DATABASE_URL: postgres://postgres:super-secret-password@localhost:5432/postgres
-    working_dir: /var/lib/postgres/src/pg_dba_metrics/
-    integration_user: postgres
-    exec: python3 /home/deploy/src/pg_dba_metrics/dba_metrics/nri.py
