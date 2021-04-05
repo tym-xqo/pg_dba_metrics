@@ -9,4 +9,4 @@ select slot_name
      , replay_lag_bytes::bigint
      , replay_lag_size
   from bdr.node_slots
- where slot_name != 'bdr_wmx_rail9f667b5_wmx_api'
+ where slot_name not like 'bdr_wmx_rail%_wmx_api'
